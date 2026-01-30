@@ -19,6 +19,9 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+    @Value("${jwt.refresh-expiration}")
+    private long jwtRefreshExpiration;
+
     private SecretKey key;
 
     @PostConstruct
@@ -27,8 +30,16 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(String email) {
+        return generateToken(email, jwtExpiration);
+    }
+
+    public String generateRefreshToken(String email) {
+        return generateToken(email, jwtRefreshExpiration);
+    }
+
+    private String generateToken(String email, long expiration) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpiration);
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
             .subject(email)

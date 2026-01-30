@@ -1,5 +1,6 @@
 package kr.co.growmeal.auth.application;
 
+import kr.co.growmeal.auth.exception.InvalidTokenException;
 import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
@@ -58,6 +59,17 @@ public class AuthService {
         }
 
         String accessToken = jwtTokenProvider.generateToken(user.getEmail());
-        return new LoginResponse(accessToken);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
+    public LoginResponse refreshToken(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new InvalidTokenException();
+        }
+
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        String newAccessToken = jwtTokenProvider.generateToken(email);
+        return new LoginResponse(newAccessToken, refreshToken);
     }
 }

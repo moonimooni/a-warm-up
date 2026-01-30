@@ -5,6 +5,7 @@ import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.PhoneVerificationConfirmRequest;
 import kr.co.growmeal.auth.ui.dto.request.PhoneVerificationRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
+import kr.co.growmeal.auth.ui.dto.request.TokenRefreshRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
 import kr.co.growmeal.auth.application.AuthService;
 import kr.co.growmeal.auth.application.PhoneVerificationService;
@@ -45,6 +46,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/tokens/refresh")
+    public ResponseEntity<LoginResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        LoginResponse response = authService.refreshToken(request.refreshToken());
         return ResponseEntity.ok(response);
     }
 }
