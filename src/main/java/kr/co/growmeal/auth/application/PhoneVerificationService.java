@@ -1,5 +1,7 @@
 package kr.co.growmeal.auth.application;
 
+import kr.co.growmeal.auth.exception.InvalidVerificationCodeException;
+import kr.co.growmeal.auth.exception.VerificationCodeExpiredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,11 +41,11 @@ public class PhoneVerificationService {
         String storedCode = redisTemplate.opsForValue().get(VERIFICATION_KEY_PREFIX + phoneNumber);
 
         if (storedCode == null) {
-            throw new IllegalArgumentException("인증코드가 만료되었거나 존재하지 않습니다");
+            throw new VerificationCodeExpiredException();
         }
 
         if (!storedCode.equals(code)) {
-            throw new IllegalArgumentException("인증코드가 일치하지 않습니다");
+            throw new InvalidVerificationCodeException();
         }
 
         // 인증 완료 표시 (회원가입 시 확인용, 10분간 유효)

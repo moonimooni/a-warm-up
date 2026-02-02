@@ -1,6 +1,10 @@
 package kr.co.growmeal.auth.application;
 
+import kr.co.growmeal.auth.exception.DuplicateEmailException;
+import kr.co.growmeal.auth.exception.DuplicatePhoneNumberException;
+import kr.co.growmeal.auth.exception.InvalidCredentialsException;
 import kr.co.growmeal.auth.exception.InvalidTokenException;
+import kr.co.growmeal.auth.exception.PhoneNotVerifiedException;
 import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
@@ -24,17 +28,17 @@ public class AuthService {
     public void register(RegisterRequest request) {
         // 전화번호 인증 확인
         if (!phoneVerificationService.isVerified(request.phoneNumber())) {
-            throw new IllegalArgumentException("전화번호 인증이 완료되지 않았습니다");
+            throw new PhoneNotVerifiedException();
         }
 
         // 이메일 중복 확인
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다");
+            throw new DuplicateEmailException();
         }
 
         // 전화번호 중복 확인
         if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
-            throw new IllegalArgumentException("이미 사용 중인 전화번호입니다");
+            throw new DuplicatePhoneNumberException();
         }
 
         // 사용자 저장
@@ -52,10 +56,10 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
-            .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다"));
+            .orElseThrow(InvalidCredentialsException::new);
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다");
+            throw new InvalidCredentialsException();
         }
 
         String accessToken = jwtTokenProvider.generateToken(user.getEmail());
