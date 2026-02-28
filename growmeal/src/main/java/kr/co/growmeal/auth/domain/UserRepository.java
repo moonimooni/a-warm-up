@@ -1,6 +1,5 @@
 package kr.co.growmeal.auth.domain;
 
-import kr.co.growmeal.auth.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -2,7 +2,6 @@ package kr.co.growmeal.auth.ui.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import kr.co.growmeal.auth.ui.validator.KoreanPhoneNumber;
 import kr.co.growmeal.auth.ui.validator.StrongPassword;
 
