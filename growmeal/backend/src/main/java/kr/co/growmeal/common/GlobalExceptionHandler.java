@@ -1,12 +1,13 @@
 package kr.co.growmeal.common;
 
-import kr.co.growmeal.auth.exception.DuplicateEmailException;
-import kr.co.growmeal.auth.exception.DuplicatePhoneNumberException;
-import kr.co.growmeal.auth.exception.InvalidCredentialsException;
-import kr.co.growmeal.auth.exception.InvalidTokenException;
-import kr.co.growmeal.auth.exception.InvalidVerificationCodeException;
-import kr.co.growmeal.auth.exception.PhoneNotVerifiedException;
-import kr.co.growmeal.auth.exception.VerificationCodeExpiredException;
+import kr.co.growmeal.auth.domain.exception.DuplicateEmailException;
+import kr.co.growmeal.auth.domain.exception.DuplicatePhoneNumberException;
+import kr.co.growmeal.auth.domain.exception.InvalidCredentialsException;
+import kr.co.growmeal.auth.domain.exception.InvalidTokenException;
+import kr.co.growmeal.auth.domain.exception.InvalidVerificationCodeException;
+import kr.co.growmeal.auth.domain.exception.PhoneNotVerifiedException;
+import kr.co.growmeal.auth.domain.exception.UserNotFoundException;
+import kr.co.growmeal.auth.domain.exception.VerificationCodeExpiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,5 +39,10 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<Void> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Void> handleNotFoundException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

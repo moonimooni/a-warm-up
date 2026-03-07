@@ -1,7 +1,7 @@
 package kr.co.growmeal.auth.application;
 
-import kr.co.growmeal.auth.exception.InvalidVerificationCodeException;
-import kr.co.growmeal.auth.exception.VerificationCodeExpiredException;
+import kr.co.growmeal.auth.domain.exception.InvalidVerificationCodeException;
+import kr.co.growmeal.auth.domain.exception.VerificationCodeExpiredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

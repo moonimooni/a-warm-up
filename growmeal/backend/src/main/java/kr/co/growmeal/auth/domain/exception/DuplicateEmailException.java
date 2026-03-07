@@ -1,4 +1,4 @@
-package kr.co.growmeal.auth.exception;
+package kr.co.growmeal.auth.domain.exception;
 
 public class DuplicateEmailException extends RuntimeException {
 

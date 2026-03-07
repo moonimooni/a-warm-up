@@ -1,10 +1,10 @@
 package kr.co.growmeal.auth.application;
 
-import kr.co.growmeal.auth.exception.DuplicateEmailException;
-import kr.co.growmeal.auth.exception.DuplicatePhoneNumberException;
-import kr.co.growmeal.auth.exception.InvalidCredentialsException;
-import kr.co.growmeal.auth.exception.InvalidTokenException;
-import kr.co.growmeal.auth.exception.PhoneNotVerifiedException;
+import kr.co.growmeal.auth.domain.exception.DuplicateEmailException;
+import kr.co.growmeal.auth.domain.exception.DuplicatePhoneNumberException;
+import kr.co.growmeal.auth.domain.exception.InvalidCredentialsException;
+import kr.co.growmeal.auth.domain.exception.InvalidTokenException;
+import kr.co.growmeal.auth.domain.exception.PhoneNotVerifiedException;
 import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
