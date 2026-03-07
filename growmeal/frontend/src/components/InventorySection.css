@@ -1,0 +1,76 @@
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.inv-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 6px 10px 6px;
+  background: var(--color-slot-empty);
+  border: none;
+  border-radius: var(--radius-slot);
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: var(--shadow-slot);
+  transition: transform 0.15s, box-shadow 0.15s;
+  min-height: 88px;
+}
+
+.inv-slot:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.inv-slot--add {
+  background: transparent;
+  border: 2px dashed var(--color-text-muted);
+  box-shadow: none;
+  color: var(--color-text-muted);
+}
+
+.inv-slot--add:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.inv-slot__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+.inv-slot__emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.inv-slot__name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.inv-slot__location {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  white-space: nowrap;
+}
+
+.inv-slot__add-icon {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}

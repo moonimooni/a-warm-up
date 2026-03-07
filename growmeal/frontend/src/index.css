@@ -1,68 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Nunito', system-ui, sans-serif;
   font-weight: 400;
+  line-height: 1.5;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --color-bg-start: #fdf6ec;
+  --color-bg-end: #e8f5ef;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-primary: #5cac7a;
+  --color-primary-light: #d6ece1;
+  --color-primary-dark: #3d8a5e;
+
+  --color-accent: #f4a35a;
+  --color-accent-light: #fde8d0;
+
+  --color-text-main: #333d2f;
+  --color-text-sub: #7a8c75;
+  --color-text-muted: #b0bfaa;
+
+  --color-card-bg: #ffffff;
+  --color-slot-empty: #f4f7f2;
+  --color-slot-done: #e8f5ef;
+  --color-slot-active: #fff4e8;
+
+  --radius-card: 20px;
+  --radius-slot: 14px;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.07);
+  --shadow-slot: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  background: linear-gradient(160deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
   min-height: 100vh;
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 0 0 40px 0;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.app-shell {
+  width: 100%;
+  max-width: 400px;
+  padding: 0 0 32px 0;
+}
+
+/* Card */
+.card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 18px 18px;
+  margin-bottom: 14px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.card-link {
+  font-size: 13px;
+  color: var(--color-primary);
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  text-decoration: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Badge */
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.badge-warn {
+  background: #ffe0e0;
+  color: #e05050;
+}
+
+.badge-ok {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
 }

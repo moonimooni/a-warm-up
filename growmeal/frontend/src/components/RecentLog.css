@@ -1,0 +1,63 @@
+.recent-log__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--color-slot-empty);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-align: left;
+}
+
+.log-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.log-row__day {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  min-width: 28px;
+}
+
+.log-row__foods {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.log-row__food-pill {
+  font-size: 20px;
+  line-height: 1;
+  background: #fff;
+  padding: 4px 6px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-slot);
+}
+
+.log-row__reaction {
+  display: flex;
+  gap: 4px;
+}
+
+.log-row__thumb {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.log-row__thumb--up-muted,
+.log-row__thumb--down-muted {
+  opacity: 0.25;
+}
