@@ -26,9 +26,38 @@
   letter-spacing: -0.5px;
 }
 
-.home-header__profile {
+.home-header__actions {
   grid-column: 2;
   grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+}
+
+.home-header__settings {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-slot-empty);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: var(--shadow-slot);
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.home-header__settings:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 4px 14px rgba(92, 172, 122, 0.15);
+  transform: translateY(-1px);
+}
+
+.home-header__profile {
   background: var(--color-card-bg);
   border: 2px solid var(--color-primary-light);
   border-radius: 50px;
@@ -39,7 +68,6 @@
   cursor: pointer;
   box-shadow: var(--shadow-slot);
   transition: box-shadow 0.2s, transform 0.15s;
-  align-self: center;
 }
 
 .home-header__profile:hover {

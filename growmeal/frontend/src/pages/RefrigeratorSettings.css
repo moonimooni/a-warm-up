@@ -1,0 +1,161 @@
+/* Settings Layout */
+.settings-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.settings-header {
+  margin-bottom: 24px;
+}
+
+.settings-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-top: 12px;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Refrigerator Card */
+.fridge-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  background: var(--color-card-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.fridge-card-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.fridge-card-content {
+  flex: 1;
+}
+
+.fridge-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 6px;
+}
+
+.fridge-card-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-sub);
+  font-weight: 500;
+}
+
+.btn-delete {
+  padding: 8px;
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.btn-delete:hover {
+  background: var(--color-slot-empty);
+}
+
+/* Add Button */
+.btn-add-fridge {
+  width: 100%;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.btn-add-fridge:hover {
+  background: #c4e0d3;
+  border-color: var(--color-primary-dark);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--color-card-bg);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  background: var(--color-slot-empty);
+  border: none;
+  border-radius: var(--radius-slot);
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e0e6dc;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-actions .btn-primary {
+  flex: 1;
+}
