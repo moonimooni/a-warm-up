@@ -39,12 +39,15 @@
 }
 
 .log-row__food-pill {
-  font-size: 20px;
+  font-size: 11px;
+  font-weight: 700;
   line-height: 1;
+  color: var(--color-text-main);
   background: #fff;
-  padding: 4px 6px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  border-radius: 20px;
   box-shadow: var(--shadow-slot);
+  white-space: nowrap;
 }
 
 .log-row__reaction {

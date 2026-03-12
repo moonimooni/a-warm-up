@@ -6,14 +6,12 @@ export type MealStatus = 'done' | 'active' | 'empty'
 export interface MealSlot {
   id: string
   label: string
-  emoji?: string
   status: MealStatus
   note?: string
 }
 
 export interface SnackSlot {
   id: string
-  emoji?: string
   label?: string
   filled: boolean
 }
@@ -59,11 +57,7 @@ export default function MealSection({
             onClick={() => onMealClick(m.id)}
             aria-label={m.label}
           >
-            {m.emoji && m.status !== 'empty' ? (
-              <span className="meal-slot__food-emoji">{m.emoji}</span>
-            ) : (
-              statusIcon(m.status)
-            )}
+            {statusIcon(m.status)}
             <span className="meal-slot__label">{m.label}</span>
           </button>
         ))}
@@ -82,7 +76,6 @@ export default function MealSection({
             >
               {s.filled ? (
                 <>
-                  <span className="snack-slot__emoji">{s.emoji}</span>
                   {s.label && <span className="snack-slot__label">{s.label}</span>}
                 </>
               ) : (

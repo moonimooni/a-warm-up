@@ -313,7 +313,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
         {
           "itemId": "uuid",
           "name": "계란찜",
-          "emoji": "🥚",
           "createdAt": "2026-03-08T00:00:00Z",
           "expirationDate": "2026-03-08T10:00:00Z"
         }
@@ -371,7 +370,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
       "itemId": "uuid",
       "name": "계란찜",
       "type": "MEAL",
-      "emoji": "🥚",
       "refrigeratorId": "uuid", // 보관 중인 냉장고 ID
       "compartmentId": "냉장_좌_2단", // 냉장고 compartment ID
       "nutrients": ["PROTEIN"],
@@ -390,7 +388,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
 {
   "name": "당근",
   "type": "INGREDIENT",
-  "emoji": "🥕",
   "refrigeratorId": "uuid",     // 보관할 냉장고 ID
   "compartmentId": "냉장_우_1단",  // 냉장고 compartment ID
   "expiresAt": "2026-03-10"
@@ -401,7 +398,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
   "itemId": "uuid",
   "name": "당근",
   "type": "INGREDIENT",
-  "emoji": "🥕",
   "refrigeratorId": "uuid",     // 보관할 냉장고 ID
   "compartmentId": "냉장_우_1단",  // 냉장고 compartment ID
   "nutrients": ["VITAMIN_A"], // ingredient master의 nutrients
@@ -424,7 +420,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
   "itemId": "uuid",
   "name": "당근",
   "type": "INGREDIENT",
-  "emoji": "🥕",
   "refrigeratorId": "uuid", // 보관할 냉장고 ID
   "compartmentId": "냉장\_우\_1단", // 냉장고 compartment ID
   "nutrients": ["VITAMIN_A"], // ingredient master의 nutrients
@@ -457,7 +452,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
     {
       "ingredientId": "uuid",
       "name": "두부",
-      "emoji": "🧊",
       "category": "PROTEIN", // PROTEIN | VEGETABLE | GRAIN | DAIRY | MEAT | FISH | FRUIT | ETC
       "nutrients": ["PROTEIN", "CALCIUM", "IRON"],
       "allergyInfo": ["SOYBEAN"],
@@ -466,7 +460,6 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
     {
       "ingredientId": "uuid",
       "name": "미역",
-      "emoji": "🌿",
       "category": "VEGETABLE",
       "nutrients": ["CALCIUM", "IRON", "VITAMIN_K"],
       "allergyInfo": [],
@@ -492,7 +485,6 @@ GET /ingredients/master/search?q=두부
     {
       "ingredientId": "uuid",
       "name": "두부",
-      "emoji": "🧊",
       "category": "PROTEIN",
       "nutrients": ["PROTEIN", "CALCIUM", "IRON"],
       "allergyInfo": ["SOYBEAN"],
@@ -501,7 +493,6 @@ GET /ingredients/master/search?q=두부
     {
       "ingredientId": "uuid",
       "name": "순두부",
-      "emoji": "🥛",
       "category": "PROTEIN",
       "nutrients": ["PROTEIN", "CALCIUM"],
       "allergyInfo": ["SOYBEAN"],
@@ -520,7 +511,6 @@ GET /ingredients/master/search?q=두부
 {
   "ingredientId": "uuid",
   "name": "두부",
-  "emoji": "🧊",
   "category": "PROTEIN",
   "nutrients": ["PROTEIN", "CALCIUM", "IRON"],
   "allergyInfo": ["대두"],
@@ -566,7 +556,6 @@ GET /ingredients/master/search?q=두부
     {
       "recipeId": "uuid",
       "name": "두부미역국",
-      "emoji": "🍲",
       "difficulty": "MEDIUM", // EASY | MEDIUM | HARD
       "steps": [
         {
@@ -606,7 +595,6 @@ GET /ingredients/master/search?q=두부
 {
   "recipeId": "uuid",
   "name": "두부미역국",
-  "emoji": "🍲",
   "difficulty": "MEDIUM", // EASY | MEDIUM | HARD
   "steps": [
     {
@@ -645,7 +633,6 @@ GET /ingredients/master/search?q=두부
 // Request
 {
   "name": "두부미역국",
-  "emoji": "🍲",
   "difficulty": "MEDIUM",  // "EASY" | "MEDIUM" | "HARD"
   "steps": [
     {
@@ -683,7 +670,6 @@ GET /ingredients/master/search?q=두부
 {
   "recipeId": "uuid",
   "name": "두부미역국",
-  "emoji": "🍲",
   "difficulty": "MEDIUM",
   "steps": [
     {
@@ -746,7 +732,6 @@ GET /ingredients/master/search?q=두부
 {
   "recipeId": "uuid",
   "name": "두부미역국 (개선판)",
-  "emoji": "🍲",
   "difficulty": "EASY",
   "steps": [
     {
@@ -796,7 +781,6 @@ GET /ingredients/master/search?q=두부
 {
   "recipeId": "uuid",
   "name": "두부미역국 (개선판)",
-  "emoji": "🍲",
   "difficulty": "EASY",
   "steps": [...],
   "nutrients": ["PROTEIN", "CALCIUM", "IRON", "VITAMIN_K"],  // 재계산됨
@@ -872,7 +856,6 @@ Query params: `date=2026-03-08` (필수 또는 `startDate` + `endDate`)
       "foods": [
         {
           "name": "쌀밥",
-          "emoji": "🍚",
           "inventoryItemId": "uuid"
         }
       ],
@@ -893,7 +876,7 @@ Query params: `date=2026-03-08` (필수 또는 `startDate` + `endDate`)
   "type": "SNACK",
   "snackIndex": 1,
   "foods": [
-    { "name": "쌀과자", "emoji": "🍪" }
+    { "name": "쌀과자" }
   ],
   "notes": "",
   "reaction": "GOOD"
@@ -914,7 +897,6 @@ Query params: `date=2026-03-08` (필수 또는 `startDate` + `endDate`)
   "foods": [
     {
       "name": "쌀밥",
-      "emoji": "🍚",
       "inventoryItemId": "uuid"
     }
   ],
@@ -940,7 +922,6 @@ Query params: `date=2026-03-08` (필수 또는 `startDate` + `endDate`)
           "itemId": "uuid",
           "name": "소불고기",
           "type": "FOOD",
-          "emoji": "🍖",
           "refrigeratorId": "uuid",
           "compartmentId": "냉장\_우\_1단",
           "nutrients": ["PROTEIN"],

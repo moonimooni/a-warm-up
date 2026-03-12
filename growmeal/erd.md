@@ -52,7 +52,6 @@ erDiagram
     INGREDIENT_MASTER {
         uuid ingredientId PK
         string name
-        string emoji
         enum category "PROTEIN|VEGETABLE|GRAIN|DAIRY|MEAT|FISH|FRUIT|ETC"
         string description
     }
@@ -71,7 +70,6 @@ erDiagram
         uuid itemId PK
         string name
         enum type "MEAL|INGREDIENT"
-        string emoji
         uuid refrigeratorId FK
         string compartmentId FK
         date expiresAt
@@ -91,7 +89,6 @@ erDiagram
     RECIPE {
         uuid recipeId PK
         string name
-        string emoji
         enum difficulty "EASY|MEDIUM|HARD"
         datetime createdAt
         datetime updatedAt
@@ -137,7 +134,6 @@ erDiagram
         uuid id PK
         uuid mealId FK
         string name
-        string emoji
         uuid inventoryItemId FK "nullable"
     }
 

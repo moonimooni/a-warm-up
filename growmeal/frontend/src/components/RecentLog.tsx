@@ -3,7 +3,7 @@ import './RecentLog.css'
 export interface LogEntry {
   id: string
   dayLabel: string
-  foods: { emoji: string; name: string }[]
+  foods: { name: string }[]
   liked: boolean | null
 }
 
@@ -31,7 +31,7 @@ export default function RecentLog({ entries, onEntryClick }: RecentLogProps) {
             <div className="log-row__foods">
               {entry.foods.map((f, i) => (
                 <span key={i} className="log-row__food-pill" title={f.name}>
-                  {f.emoji}
+                  {f.name}
                 </span>
               ))}
             </div>

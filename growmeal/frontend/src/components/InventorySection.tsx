@@ -2,7 +2,6 @@ import './InventorySection.css'
 
 export interface InventoryItem {
   id: string
-  emoji: string
   name: string
   location: string
   locationColor?: string
@@ -36,7 +35,6 @@ export default function InventorySection({ items, onItemClick, onAddClick, onVie
                 {item.warning}
               </span>
             )}
-            <span className="inv-slot__emoji">{item.emoji}</span>
             <span className="inv-slot__name">{item.name}</span>
             <span
               className="inv-slot__location"
