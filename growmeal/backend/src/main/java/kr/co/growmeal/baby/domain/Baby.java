@@ -36,7 +36,6 @@ public class Baby {
     @Column(name = "weight_kg")
     private Double weightKg;
 
-    // 알레르기 목록을 콤마(,)로 이어서 저장
     @Column(name = "allergies")
     private String allergies;
 
@@ -45,7 +44,7 @@ public class Baby {
 
     @Builder
     public Baby(User user, String name, LocalDate birthDate,
-                Double heightCm, Double weightKg, String allergies) {
+            Double heightCm, Double weightKg, String allergies) {
         this.user = user;
         this.name = name;
         this.birthDate = birthDate;

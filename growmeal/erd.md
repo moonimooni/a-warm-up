@@ -2,164 +2,165 @@
 
 ```mermaid
 erDiagram
-    USER {
-        uuid userId PK
-        string email UK
-        string password
-        string name
-        enum role "MOM|DAD|GRANDMA|GRANDPA|OTHER"
-        string refreshToken
-        datetime createdAt
-    }
+	direction TB
+	USER {
+		long id PK ""
+		string email UK ""
+		string password  ""
+		string name  ""
+		string role  "MOM|DAD|GRANDMA|GRANDPA|OTHER"
+		datetime createdAt  ""
+		datetime updatedAt  ""
+	}
 
-    BABY {
-        uuid babyId PK
-        string name
-        date birthDate
-    }
+	BABY {
+		long id PK ""
+		string name  ""
+		date birthDate  ""
+		datetime createdAt  ""
+		datetime updatedAt  ""
+	}
 
-    BABY_ALLERGY {
-        uuid id PK
-        uuid babyId FK
-        string allergy
-    }
+	BABY_ALLERGY {
+		long id PK ""
+		long babyId  ""
+		string allergy  ""
+	}
 
-    USER_BABY {
-        uuid userId FK
-        uuid babyId FK
-    }
+	USER_BABY {
+		long userId PK ""
+		long babyId PK ""
+	}
 
-    REFRIGERATOR_MODEL {
-        string model PK "e.g. SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR"
-        string name
-        string imageUrl
-    }
+	REFRIGERATOR_MODEL {
+		long id PK ""
+		string model UK "e.g. SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR"
+		string name  ""
+		string imageUrl  ""
+		json compartments  "[{id, name}, ...]"
+	}
 
-    REFRIGERATOR {
-        uuid refrigeratorId PK
-        string nickname
-        string model FK
-        uuid userId FK
-        datetime createdAt
-    }
+	REFRIGERATOR {
+		long id PK ""
+		long refrigeratorModelId  ""
+		string nickname  ""
+		long userId  ""
+		datetime createdAt  ""
+		datetime updatedAt  ""
+	}
 
-    COMPARTMENT {
-        string compartmentId PK "e.g. 냉장_좌_2단"
-        string model FK
-        string name
-    }
+	INGREDIENT_MASTER {
+		long id PK ""
+		string name UK ""
+		string category  "PROTEIN|VEGETABLE|GRAIN|DAIRY|MEAT|FISH|FRUIT|ETC"
+		string mainNutrient  "PROTEIN|CALCIUM|IRON|VITAMIN_A|..."
+		string extraNutrient  "nullable"
+		string description  ""
+	}
 
-    INGREDIENT_MASTER {
-        uuid ingredientId PK
-        string name
-        enum category "PROTEIN|VEGETABLE|GRAIN|DAIRY|MEAT|FISH|FRUIT|ETC"
-        string description
-    }
+	INGREDIENT_MASTER_ALLERGY {
+		long id PK ""
+		long ingredientMasterId  ""
+		string allergyInfo  "e.g. 밀, 대두"
+	}
 
-    INGREDIENT_NUTRIENT {
-        uuid ingredientId FK
-        enum nutrient "PROTEIN|CALCIUM|IRON|VITAMIN_A|..."
-    }
+	INVENTORY_ITEM {
+		long id PK ""
+		string name  ""
+		string type  "MEAL|INGREDIENT"
+		long refrigeratorId  ""
+		string compartmentId  "JSON 내 id 참조"
+		date expiresAt  ""
+		datetime createdAt  ""
+	}
 
-    INGREDIENT_ALLERGY {
-        uuid ingredientId FK
-        string allergyInfo
-    }
+	INVENTORY_ITEM_INGREDIENT {
+		long id PK ""
+		long inventoryItemId  ""
+		long ingredientMasterId  "nullable, 마스터 재료일 시"
+		string name  "nullable, 마스터에 없는 재료일 시"
+	}
 
-    INVENTORY_ITEM {
-        uuid itemId PK
-        string name
-        enum type "MEAL|INGREDIENT"
-        uuid refrigeratorId FK
-        string compartmentId FK
-        date expiresAt
-        datetime createdAt
-    }
+	RECIPE {
+		long id PK ""
+		string name  ""
+		string difficulty  "EASY|MEDIUM|HARD"
+		datetime createdAt  ""
+		datetime updatedAt  ""
+	}
 
-    INVENTORY_NUTRIENT {
-        uuid itemId FK
-        enum nutrient
-    }
+	RECIPE_STEP {
+		long id PK ""
+		long recipeId  ""
+		int step  ""
+		string description  ""
+		string image  "nullable"
+	}
 
-    INVENTORY_ALLERGY {
-        uuid itemId FK
-        string allergyInfo
-    }
+	RECIPE_INGREDIENT {
+		long id PK ""
+		long recipeId  ""
+		long ingredientMasterId  "nullable, 마스터 재료일 시"
+		string name  "nullable, 마스터에 없는 재료일 시"
+		string amount  "e.g. 50g"
+	}
 
-    RECIPE {
-        uuid recipeId PK
-        string name
-        enum difficulty "EASY|MEDIUM|HARD"
-        datetime createdAt
-        datetime updatedAt
-    }
+	MEAL_LOG {
+		long id PK ""
+		long babyId  ""
+		string type  "BREAKFAST|LUNCH|DINNER|SNACK"
+		int snackIndex  "nullable, SNACK일 때만"
+		string notes  ""
+		string reaction  "GOOD|NEUTRAL|BAD"
+		long createdByUserId  ""
+		datetime createdAt  ""
+	}
 
-    RECIPE_STEP {
-        uuid id PK
-        uuid recipeId FK
-        int step
-        string description
-        string image "nullable"
-    }
+	MEAL_FOOD {
+		long id PK ""
+		long mealLogId  ""
+		long inventoryItemId  "nullable, 인벤토리 참조 시"
+		string name  "nullable, 직접 입력 시"
+	}
 
-    RECIPE_INGREDIENT {
-        uuid id PK
-        uuid recipeId FK
-        string name
-        string amount
-    }
+	%% 관계
+	USER ||--o{ USER_BABY : ""
+	BABY ||--o{ USER_BABY : ""
+	BABY ||--o{ BABY_ALLERGY : "보유"
+	BABY ||--o{ MEAL_LOG : "기록"
 
-    RECIPE_NUTRIENT {
-        uuid recipeId FK
-        enum nutrient "자동 계산"
-    }
+	USER ||--o{ REFRIGERATOR : "소유"
+	USER ||--o{ MEAL_LOG : "작성"
+	REFRIGERATOR_MODEL ||--o{ REFRIGERATOR : "모델"
+	REFRIGERATOR ||--o{ INVENTORY_ITEM : "보관"
 
-    RECIPE_ALLERGY_WARNING {
-        uuid recipeId FK
-        string allergyWarning "자동 계산"
-    }
+	INGREDIENT_MASTER ||--o{ INGREDIENT_MASTER_ALLERGY : ""
+	INGREDIENT_MASTER ||--o{ INVENTORY_ITEM_INGREDIENT : ""
+	INGREDIENT_MASTER ||--o{ RECIPE_INGREDIENT : ""
 
-    MEAL_LOG {
-        uuid mealId PK
-        uuid babyId FK
-        enum type "BREAKFAST|LUNCH|DINNER|SNACK"
-        int snackIndex "nullable"
-        string notes
-        enum reaction "GOOD|NEUTRAL|BAD"
-        uuid createdByUserId FK
-        datetime createdAt
-    }
+	INVENTORY_ITEM ||--o{ INVENTORY_ITEM_INGREDIENT : "구성"
+	INVENTORY_ITEM ||--o{ MEAL_FOOD : "참조"
 
-    MEAL_FOOD {
-        uuid id PK
-        uuid mealId FK
-        string name
-        uuid inventoryItemId FK "nullable"
-    }
+	RECIPE ||--o{ RECIPE_STEP : "단계"
+	RECIPE ||--o{ RECIPE_INGREDIENT : "재료"
 
-    %% 관계
-    USER ||--o{ USER_BABY : "참여"
-    BABY ||--o{ USER_BABY : "공유"
-    BABY ||--o{ BABY_ALLERGY : "보유"
-    BABY ||--o{ MEAL_LOG : "기록됨"
-
-    USER ||--o{ REFRIGERATOR : "소유"
-    REFRIGERATOR_MODEL ||--o{ REFRIGERATOR : "모델"
-    REFRIGERATOR_MODEL ||--o{ COMPARTMENT : "구성"
-    REFRIGERATOR ||--o{ INVENTORY_ITEM : "보관"
-    COMPARTMENT ||--o{ INVENTORY_ITEM : "위치"
-
-    INGREDIENT_MASTER ||--o{ INGREDIENT_NUTRIENT : "영양소"
-    INGREDIENT_MASTER ||--o{ INGREDIENT_ALLERGY : "알러지"
-    INVENTORY_ITEM ||--o{ INVENTORY_NUTRIENT : "영양소"
-    INVENTORY_ITEM ||--o{ INVENTORY_ALLERGY : "알러지"
-
-    RECIPE ||--o{ RECIPE_STEP : "단계"
-    RECIPE ||--o{ RECIPE_INGREDIENT : "재료"
-    RECIPE ||--o{ RECIPE_NUTRIENT : "영양소(자동)"
-    RECIPE ||--o{ RECIPE_ALLERGY_WARNING : "알러지(자동)"
-
-    MEAL_LOG ||--o{ MEAL_FOOD : "음식"
-    INVENTORY_ITEM ||--o{ MEAL_FOOD : "참조(optional)"
-    USER ||--o{ MEAL_LOG : "작성"
+	MEAL_LOG ||--o{ MEAL_FOOD : "음식"
 ```
+
+## 참고사항
+
+### Compartments (냉장고 칸)
+- `REFRIGERATOR_MODEL.compartments` JSON 예시:
+```json
+[
+  {"id": "00101", "name": "냉장 좌측 1단"},
+  {"id": "00102", "name": "냉장 좌측 2단"},
+  {"id": "00201", "name": "냉동 상단"}
+]
+```
+- `INVENTORY_ITEM.compartmentId`는 해당 JSON 내의 `id`를 문자열로 저장
+
+### Nullable 제약조건
+- `INVENTORY_ITEM_INGREDIENT`: `ingredientMasterId` 또는 `name` 중 하나는 필수
+- `RECIPE_INGREDIENT`: `ingredientMasterId` 또는 `name` 중 하나는 필수
+- `MEAL_FOOD`: `inventoryItemId` 또는 `name` 중 하나는 필수

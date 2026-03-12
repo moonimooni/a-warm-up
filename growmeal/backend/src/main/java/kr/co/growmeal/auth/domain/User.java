@@ -31,7 +31,7 @@ public class User {
     private String name;
 
     @Column(nullable = false)
-    private String role;  // "MOM" | "DAD" | "GRANDMA" | "GRANDPA" | "OTHER"
+    private String role; // "MOM" | "DAD" | "GRANDMA" | "GRANDPA" | "OTHER"
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
