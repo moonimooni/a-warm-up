@@ -8,6 +8,7 @@ import kr.co.growmeal.auth.domain.exception.PhoneNotVerifiedException;
 import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
+import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
 import kr.co.growmeal.auth.domain.User;
 import kr.co.growmeal.auth.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         // 전화번호 인증 확인
         if (!phoneVerificationService.isVerified(request.phoneNumber())) {
             throw new PhoneNotVerifiedException();
@@ -46,12 +47,20 @@ public class AuthService {
             .email(request.email())
             .password(passwordEncoder.encode(request.password()))
             .phoneNumber(request.phoneNumber())
+            .name(request.name())
+            .role(request.role())
             .build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         // 인증 정보 삭제
         phoneVerificationService.clearVerification(request.phoneNumber());
+
+        return new RegisterResponse(
+            savedUser.getId().toString(),
+            savedUser.getName(),
+            savedUser.getRole()
+        );
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -64,7 +73,16 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.generateToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        return new LoginResponse(accessToken, refreshToken);
+        int expiresIn = 900; // 15분 = 900초
+
+        return new LoginResponse(
+            user.getId().toString(),
+            user.getName(),
+            user.getRole(),
+            accessToken,
+            refreshToken,
+            expiresIn
+        );
     }
 
     public LoginResponse refreshToken(String refreshToken) {
@@ -73,7 +91,29 @@ public class AuthService {
         }
 
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(InvalidTokenException::new);
+
         String newAccessToken = jwtTokenProvider.generateToken(email);
-        return new LoginResponse(newAccessToken, refreshToken);
+        int expiresIn = 900; // 15분 = 900초
+
+        return new LoginResponse(
+            user.getId().toString(),
+            user.getName(),
+            user.getRole(),
+            newAccessToken,
+            refreshToken,
+            expiresIn
+        );
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        // Refresh Token 무효화 로직
+        // TODO: Redis 또는 DB에 블랙리스트로 저장하여 해당 토큰 무효화
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new InvalidTokenException();
+        }
+        // 실제 구현 시: refreshTokenRepository.delete(refreshToken);
     }
 }

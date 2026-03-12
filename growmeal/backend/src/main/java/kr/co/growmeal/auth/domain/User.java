@@ -27,14 +27,22 @@ public class User {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String role;  // "MOM" | "DAD" | "GRANDMA" | "GRANDPA" | "OTHER"
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    public User(String email, String password, String phoneNumber) {
+    public User(String email, String password, String phoneNumber, String name, String role) {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.name = name;
+        this.role = role;
         this.createdAt = LocalDateTime.now();
     }
 }
