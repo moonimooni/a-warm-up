@@ -9,6 +9,7 @@ import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.request.TokenRefreshRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
 import kr.co.growmeal.auth.ui.dto.response.LogoutResponse;
+import kr.co.growmeal.auth.ui.dto.response.MeResponse;
 import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
 import kr.co.growmeal.auth.ui.dto.response.TokenRefreshResponse;
 import kr.co.growmeal.auth.application.AuthService;
@@ -16,10 +17,13 @@ import kr.co.growmeal.auth.application.PhoneVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/auth")
@@ -62,6 +66,12 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout(@Valid @RequestBody LogoutRequest request) {
         LogoutResponse response = authService.logout(request.refreshToken());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<MeResponse> getMe(Principal principal) {
+        MeResponse response = authService.getMe(principal.getName());
         return ResponseEntity.ok(response);
     }
 }

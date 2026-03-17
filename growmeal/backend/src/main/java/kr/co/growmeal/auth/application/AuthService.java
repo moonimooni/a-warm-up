@@ -9,6 +9,7 @@ import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
 import kr.co.growmeal.auth.ui.dto.response.LogoutResponse;
+import kr.co.growmeal.auth.ui.dto.response.MeResponse;
 import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
 import kr.co.growmeal.auth.ui.dto.response.TokenRefreshResponse;
 import kr.co.growmeal.auth.domain.User;
@@ -112,5 +113,19 @@ public class AuthService {
         }
         // 실제 구현 시: refreshTokenRepository.delete(refreshToken);
         return LogoutResponse.ok();
+    }
+
+    @Transactional(readOnly = true)
+    public MeResponse getMe(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(InvalidCredentialsException::new);
+
+        // TODO: USER_BABY 테이블에서 babyId 조회
+        return new MeResponse(
+            user.getId().toString(),
+            user.getName(),
+            user.getRole(),
+            null
+        );
     }
 }
