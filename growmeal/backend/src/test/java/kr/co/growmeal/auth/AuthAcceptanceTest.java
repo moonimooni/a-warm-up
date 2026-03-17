@@ -78,7 +78,9 @@ class AuthAcceptanceTest {
             .body(Map.of(
                 "email", email,
                 "phoneNumber", phoneNumber,
-                "password", password
+                "password", password,
+                "name", "테스트",
+                "role", "MOM"
             ))
             .when().post("/auth/register")
             .then().extract();
@@ -116,13 +118,13 @@ class AuthAcceptanceTest {
         var refreshResponse = RestAssured.given()
             .contentType(ContentType.JSON)
             .body(Map.of("refreshToken", refreshToken))
-            .when().post("/auth/tokens/refresh")
+            .when().post("/auth/refresh")
             .then().extract();
 
-        // Then: 새로운 access token과 refresh token 발급
+        // Then: 새로운 access token 발급
         assertThat(refreshResponse.statusCode()).isEqualTo(200);
         assertThat(refreshResponse.jsonPath().getString("accessToken")).isNotBlank();
-        assertThat(refreshResponse.jsonPath().getString("refreshToken")).isNotBlank();
+        assertThat(refreshResponse.jsonPath().getInt("expiresIn")).isEqualTo(900);
     }
 
     @Test
@@ -135,7 +137,7 @@ class AuthAcceptanceTest {
         var refreshResponse = RestAssured.given()
             .contentType(ContentType.JSON)
             .body(Map.of("refreshToken", invalidRefreshToken))
-            .when().post("/auth/tokens/refresh")
+            .when().post("/auth/refresh")
             .then().extract();
 
         // Then: 401 에러
@@ -150,7 +152,7 @@ class AuthAcceptanceTest {
         var refreshResponse = RestAssured.given()
             .contentType(ContentType.JSON)
             .body(Map.of("refreshToken", ""))
-            .when().post("/auth/tokens/refresh")
+            .when().post("/auth/refresh")
             .then().extract();
 
         // Then: 400 에러
@@ -176,7 +178,13 @@ class AuthAcceptanceTest {
         // 회원가입
         RestAssured.given()
             .contentType(ContentType.JSON)
-            .body(Map.of("email", email, "phoneNumber", phoneNumber, "password", password))
+            .body(Map.of(
+                "email", email,
+                "phoneNumber", phoneNumber,
+                "password", password,
+                "name", "테스트",
+                "role", "MOM"
+            ))
             .when().post("/auth/register");
     }
 

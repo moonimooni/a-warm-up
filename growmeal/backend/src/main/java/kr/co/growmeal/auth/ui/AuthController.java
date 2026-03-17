@@ -8,7 +8,9 @@ import kr.co.growmeal.auth.ui.dto.request.PhoneVerificationRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.request.TokenRefreshRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
+import kr.co.growmeal.auth.ui.dto.response.LogoutResponse;
 import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
+import kr.co.growmeal.auth.ui.dto.response.TokenRefreshResponse;
 import kr.co.growmeal.auth.application.AuthService;
 import kr.co.growmeal.auth.application.PhoneVerificationService;
 import lombok.RequiredArgsConstructor;
@@ -52,14 +54,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<LoginResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
-        LoginResponse response = authService.refreshToken(request.refreshToken());
+    public ResponseEntity<TokenRefreshResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        TokenRefreshResponse response = authService.refreshToken(request.refreshToken());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request) {
-        authService.logout(request.refreshToken());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<LogoutResponse> logout(@Valid @RequestBody LogoutRequest request) {
+        LogoutResponse response = authService.logout(request.refreshToken());
+        return ResponseEntity.ok(response);
     }
 }

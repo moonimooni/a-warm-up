@@ -8,7 +8,9 @@ import kr.co.growmeal.auth.domain.exception.PhoneNotVerifiedException;
 import kr.co.growmeal.auth.ui.dto.request.LoginRequest;
 import kr.co.growmeal.auth.ui.dto.request.RegisterRequest;
 import kr.co.growmeal.auth.ui.dto.response.LoginResponse;
+import kr.co.growmeal.auth.ui.dto.response.LogoutResponse;
 import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
+import kr.co.growmeal.auth.ui.dto.response.TokenRefreshResponse;
 import kr.co.growmeal.auth.domain.User;
 import kr.co.growmeal.auth.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -85,35 +87,30 @@ public class AuthService {
         );
     }
 
-    public LoginResponse refreshToken(String refreshToken) {
+    public TokenRefreshResponse refreshToken(String refreshToken) {
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new InvalidTokenException();
         }
 
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(InvalidTokenException::new);
+        if (!userRepository.existsByEmail(email)) {
+            throw new InvalidTokenException();
+        }
 
         String newAccessToken = jwtTokenProvider.generateToken(email);
         int expiresIn = 900; // 15분 = 900초
 
-        return new LoginResponse(
-            user.getId().toString(),
-            user.getName(),
-            user.getRole(),
-            newAccessToken,
-            refreshToken,
-            expiresIn
-        );
+        return new TokenRefreshResponse(newAccessToken, expiresIn);
     }
 
     @Transactional
-    public void logout(String refreshToken) {
+    public LogoutResponse logout(String refreshToken) {
         // Refresh Token 무효화 로직
         // TODO: Redis 또는 DB에 블랙리스트로 저장하여 해당 토큰 무효화
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new InvalidTokenException();
         }
         // 실제 구현 시: refreshTokenRepository.delete(refreshToken);
+        return LogoutResponse.ok();
     }
 }

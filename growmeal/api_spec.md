@@ -35,13 +35,74 @@
 
 ## 1. 인증 (Auth)
 
-| Method | Path             | 설명              |
-| ------ | ---------------- | ----------------- |
-| `POST` | `/auth/register` | 회원가입          |
-| `POST` | `/auth/login`    | 로그인            |
-| `POST` | `/auth/refresh`  | Access Token 갱신 |
-| `POST` | `/auth/logout`   | 로그아웃          |
-| `GET`  | `/auth/me`       | 내 프로필 조회    |
+| Method | Path                             | 설명                   |
+| ------ | -------------------------------- | ---------------------- |
+| `POST` | `/auth/phone-verifications`      | 전화번호 인증번호 발송 |
+| `POST` | `/auth/phone-verifications/confirm` | 인증번호 확인       |
+| `POST` | `/auth/register`                 | 회원가입               |
+| `POST` | `/auth/login`                    | 로그인                 |
+| `POST` | `/auth/refresh`                  | Access Token 갱신      |
+| `POST` | `/auth/logout`                   | 로그아웃               |
+| `GET`  | `/auth/me`                       | 내 프로필 조회         |
+
+### POST /auth/phone-verifications
+
+전화번호로 인증번호를 발송합니다. 회원가입 전에 반드시 전화번호 인증을 완료해야 합니다.
+
+```json
+// Request
+{
+  "phoneNumber": "01012345678"
+}
+
+// Response 200
+{}
+
+// Error 429 - 너무 많은 요청
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "TOO_MANY_REQUESTS",
+    "message": "인증번호 발송 요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
+  }
+}
+```
+
+### POST /auth/phone-verifications/confirm
+
+발송된 인증번호를 확인합니다.
+
+```json
+// Request
+{
+  "phoneNumber": "01012345678",
+  "code": "123456"
+}
+
+// Response 200
+{}
+
+// Error 400 - 인증번호 불일치
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "INVALID_VERIFICATION_CODE",
+    "message": "인증번호가 일치하지 않습니다."
+  }
+}
+
+// Error 410 - 인증번호 만료
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "VERIFICATION_CODE_EXPIRED",
+    "message": "인증번호가 만료되었습니다. 다시 요청해주세요."
+  }
+}
+```
 
 ### POST /auth/register
 
@@ -49,6 +110,7 @@
 // Request
 {
   "email": "mom@example.com",
+  "phoneNumber": "01012345678",
   "password": "string",
   "name": "김엄마",
   "role": "MOM" // "MOM" | "DAD" | "GRANDMA" | "GRANDPA" | "OTHER"
@@ -152,7 +214,7 @@ Access Token이 만료되었을 때 Refresh Token을 사용하여 새로운 Acce
 // Response 200
 {
   "success": true,
-  "data": { "message": "로그아웃되었습니다." },
+  "data": { "message": "ok" },
   "error": null
 }
 ```
