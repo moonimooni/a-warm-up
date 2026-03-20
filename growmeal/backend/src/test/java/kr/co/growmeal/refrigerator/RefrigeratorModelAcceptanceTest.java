@@ -34,6 +34,7 @@ class RefrigeratorModelAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        RestAssured.basePath = "/api/v1";
     }
 
     // Given: 냉장고 모델 데이터가 존재함 (data.sql로 초기화)

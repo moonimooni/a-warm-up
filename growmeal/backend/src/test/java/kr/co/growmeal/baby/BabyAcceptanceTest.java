@@ -40,6 +40,7 @@ class BabyAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        RestAssured.basePath = "/api/v1";
     }
 
     @Test

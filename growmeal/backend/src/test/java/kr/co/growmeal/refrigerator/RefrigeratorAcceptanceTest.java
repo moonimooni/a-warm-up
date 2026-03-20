@@ -40,6 +40,7 @@ class RefrigeratorAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        RestAssured.basePath = "/api/v1";
     }
 
     // Given: 로그인 후
