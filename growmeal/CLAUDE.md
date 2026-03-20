@@ -15,6 +15,7 @@
 ### 데이터베이스 규칙
 
 - **FK constraint 미사용**: 엔티티 간 관계 설정 시 id 값으로 참조하되, FK constraint는 걸지 않습니다. (JPA `@ManyToOne`, `@OneToMany` 등에서 `@JoinColumn`의 `foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)` 사용)
+- **로컬 DB 마이그레이션**: 엔티티 필드 추가/변경/삭제 시, 로컬 PostgreSQL(`growmeal` DB)에 대응하는 `ALTER TABLE` / `CREATE TABLE` 문을 직접 실행합니다. 테스트 환경(H2)은 `ddl-auto=create-drop`이므로 별도 작업 불필요합니다.
 
 ### TDD 규칙
 

@@ -36,13 +36,13 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.postgresql:postgresql'
+	testRuntimeOnly 'com.h2database:h2'
 
 	// Embedded Redis for test
 	testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'io.rest-assured:rest-assured:5.5.0'
 	testImplementation 'io.rest-assured:spring-mock-mvc:5.5.0'
 	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
