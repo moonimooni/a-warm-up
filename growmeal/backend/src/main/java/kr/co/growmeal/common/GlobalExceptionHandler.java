@@ -8,6 +8,7 @@ import kr.co.growmeal.auth.domain.exception.InvalidVerificationCodeException;
 import kr.co.growmeal.auth.domain.exception.PhoneNotVerifiedException;
 import kr.co.growmeal.auth.domain.exception.UserNotFoundException;
 import kr.co.growmeal.auth.domain.exception.VerificationCodeExpiredException;
+import kr.co.growmeal.inventory.domain.exception.InvalidCompartmentException;
 import kr.co.growmeal.refrigerator.domain.exception.RefrigeratorModelNotFoundException;
 import kr.co.growmeal.refrigerator.domain.exception.RefrigeratorNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,8 @@ public class GlobalExceptionHandler {
         PhoneNotVerifiedException.class,
         VerificationCodeExpiredException.class,
         InvalidVerificationCodeException.class,
-        RefrigeratorModelNotFoundException.class
+        RefrigeratorModelNotFoundException.class,
+        InvalidCompartmentException.class
     })
     public ResponseEntity<Void> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
