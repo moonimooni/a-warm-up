@@ -143,7 +143,13 @@ class BabyAcceptanceTest {
         // 회원가입
         RestAssured.given()
             .contentType(ContentType.JSON)
-            .body(Map.of("email", email, "phoneNumber", phoneNumber, "password", password))
+            .body(Map.of(
+                "email", email,
+                "phoneNumber", phoneNumber,
+                "password", password,
+                "name", "테스트",
+                "role", "MOM"
+            ))
             .when().post("/auth/register");
     }
 
