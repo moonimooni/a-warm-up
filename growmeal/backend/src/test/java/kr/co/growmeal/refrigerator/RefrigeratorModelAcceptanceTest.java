@@ -53,7 +53,7 @@ class RefrigeratorModelAcceptanceTest {
         // Then: 200 OK와 함께 모델 목록 반환
         assertThat(response.statusCode()).isEqualTo(200);
 
-        List<Map<String, Object>> models = response.jsonPath().getList("models");
+        List<Map<String, Object>> models = response.jsonPath().getList("data.models");
         assertThat(models).isNotEmpty();
         assertThat(models).allSatisfy(model -> {
             assertThat(model.get("model")).isNotNull();

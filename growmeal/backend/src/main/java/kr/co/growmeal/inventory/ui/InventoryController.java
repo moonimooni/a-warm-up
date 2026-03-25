@@ -1,6 +1,7 @@
 package kr.co.growmeal.inventory.ui;
 
 import jakarta.validation.Valid;
+import kr.co.growmeal.common.ApiResponse;
 import kr.co.growmeal.inventory.application.InventoryService;
 import kr.co.growmeal.inventory.ui.dto.request.CreateInventoryItemRequest;
 import kr.co.growmeal.inventory.ui.dto.response.CreateInventoryItemResponse;
@@ -19,19 +20,19 @@ public class InventoryController {
     private final InventoryService inventoryService;
 
     @GetMapping
-    public ResponseEntity<InventoryResponse> getInventory(Authentication authentication) {
+    public ResponseEntity<ApiResponse<InventoryResponse>> getInventory(Authentication authentication) {
         String email = (String) authentication.getPrincipal();
         InventoryResponse response = inventoryService.getInventory(email);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @PostMapping
-    public ResponseEntity<CreateInventoryItemResponse> createInventory(
+    public ResponseEntity<ApiResponse<CreateInventoryItemResponse>> createInventory(
         @Valid @RequestBody CreateInventoryItemRequest request,
         Authentication authentication
     ) {
         String email = (String) authentication.getPrincipal();
         CreateInventoryItemResponse response = inventoryService.createInventory(email, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(response));
     }
 }

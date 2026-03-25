@@ -107,7 +107,7 @@ class AuthAcceptanceTest {
 
             // Then: 성공적으로 로그인
             assertThat(loginResponse.statusCode()).isEqualTo(200);
-            assertThat(loginResponse.jsonPath().getString("accessToken")).isNotBlank();
+            assertThat(loginResponse.jsonPath().getString("data.accessToken")).isNotBlank();
         }
     }
 
@@ -128,7 +128,7 @@ class AuthAcceptanceTest {
 
             회원가입(email, phoneNumber, password);
             ExtractableResponse<Response> loginResponse = 로그인(email, password);
-            String refreshToken = loginResponse.jsonPath().getString("refreshToken");
+            String refreshToken = loginResponse.jsonPath().getString("data.refreshToken");
 
             // When: refresh token으로 토큰 갱신 요청
             ExtractableResponse<Response> refreshResponse = RestAssured.given()
@@ -139,8 +139,8 @@ class AuthAcceptanceTest {
 
             // Then: 새로운 access token 발급
             assertThat(refreshResponse.statusCode()).isEqualTo(200);
-            assertThat(refreshResponse.jsonPath().getString("accessToken")).isNotBlank();
-            assertThat(refreshResponse.jsonPath().getInt("expiresIn")).isEqualTo(900);
+            assertThat(refreshResponse.jsonPath().getString("data.accessToken")).isNotBlank();
+            assertThat(refreshResponse.jsonPath().getInt("data.expiresIn")).isEqualTo(900);
         }
 
         // Given: 유효하지 않은 refresh token
@@ -199,7 +199,7 @@ class AuthAcceptanceTest {
 
             회원가입(email, phoneNumber, password);
             ExtractableResponse<Response> loginResponse = 로그인(email, password);
-            String refreshToken = loginResponse.jsonPath().getString("refreshToken");
+            String refreshToken = loginResponse.jsonPath().getString("data.refreshToken");
 
             // When: 로그아웃
             ExtractableResponse<Response> logoutResponse = RestAssured.given()
@@ -210,7 +210,7 @@ class AuthAcceptanceTest {
 
             // Then: 성공
             assertThat(logoutResponse.statusCode()).isEqualTo(200);
-            assertThat(logoutResponse.jsonPath().getString("message")).isEqualTo("ok");
+            assertThat(logoutResponse.jsonPath().getString("data.message")).isEqualTo("ok");
         }
     }
 
@@ -232,7 +232,7 @@ class AuthAcceptanceTest {
 
             회원가입WithName(email, phoneNumber, password, name);
             ExtractableResponse<Response> loginResponse = 로그인(email, password);
-            String accessToken = loginResponse.jsonPath().getString("accessToken");
+            String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
             // When: 내 프로필 조회
             ExtractableResponse<Response> meResponse = RestAssured.given().log().all()
@@ -242,9 +242,9 @@ class AuthAcceptanceTest {
 
             // Then: 프로필 정보 반환
             assertThat(meResponse.statusCode()).isEqualTo(200);
-            assertThat(meResponse.jsonPath().getString("userId")).isNotBlank();
-            assertThat(meResponse.jsonPath().getString("name")).isEqualTo(name);
-            assertThat(meResponse.jsonPath().getString("role")).isEqualTo("MOM");
+            assertThat(meResponse.jsonPath().getString("data.userId")).isNotBlank();
+            assertThat(meResponse.jsonPath().getString("data.name")).isEqualTo(name);
+            assertThat(meResponse.jsonPath().getString("data.role")).isEqualTo("MOM");
         }
 
         // Given: 인증 토큰 없음

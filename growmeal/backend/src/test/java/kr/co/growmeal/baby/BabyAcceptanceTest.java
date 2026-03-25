@@ -53,7 +53,7 @@ class BabyAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: 아기 정보를 올바르게 기입
         ExtractableResponse<Response> createBabyResponse = RestAssured.given()
@@ -71,13 +71,13 @@ class BabyAcceptanceTest {
 
         // Then: 성공 리스폰스를 받는다
         assertThat(createBabyResponse.statusCode()).isEqualTo(201);
-        assertThat(createBabyResponse.jsonPath().getLong("babyId")).isNotNull();
-        assertThat(createBabyResponse.jsonPath().getString("name")).isEqualTo("하율");
-        assertThat(createBabyResponse.jsonPath().getString("birthDate")).isEqualTo("2024-01-15");
-        assertThat(createBabyResponse.jsonPath().getList("allergies")).containsExactly("땅콩", "우유");
-        assertThat(createBabyResponse.jsonPath().getDouble("heightCm")).isEqualTo(75.5);
-        assertThat(createBabyResponse.jsonPath().getDouble("weightKg")).isEqualTo(9.5);
-        assertThat(createBabyResponse.jsonPath().getString("createdAt")).isNotNull();
+        assertThat(createBabyResponse.jsonPath().getLong("data.babyId")).isNotNull();
+        assertThat(createBabyResponse.jsonPath().getString("data.name")).isEqualTo("하율");
+        assertThat(createBabyResponse.jsonPath().getString("data.birthDate")).isEqualTo("2024-01-15");
+        assertThat(createBabyResponse.jsonPath().getList("data.allergies")).containsExactly("땅콩", "우유");
+        assertThat(createBabyResponse.jsonPath().getDouble("data.heightCm")).isEqualTo(75.5);
+        assertThat(createBabyResponse.jsonPath().getDouble("data.weightKg")).isEqualTo(9.5);
+        assertThat(createBabyResponse.jsonPath().getString("data.createdAt")).isNotNull();
     }
 
     @Test
@@ -109,7 +109,7 @@ class BabyAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: 필수 필드(name) 누락
         ExtractableResponse<Response> createBabyResponse = RestAssured.given()

@@ -56,7 +56,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: POST /refrigerators 요청
         ExtractableResponse<Response> createResponse = RestAssured.given()
@@ -71,10 +71,10 @@ class RefrigeratorAcceptanceTest {
 
         // Then: 201 Created
         assertThat(createResponse.statusCode()).isEqualTo(201);
-        assertThat(createResponse.jsonPath().getLong("refrigeratorId")).isNotNull();
-        assertThat(createResponse.jsonPath().getString("nickname")).isEqualTo("주방 냉장고");
-        assertThat(createResponse.jsonPath().getString("model")).isEqualTo("SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
-        assertThat(createResponse.jsonPath().getString("createdAt")).isNotNull();
+        assertThat(createResponse.jsonPath().getLong("data.refrigeratorId")).isNotNull();
+        assertThat(createResponse.jsonPath().getString("data.nickname")).isEqualTo("주방 냉장고");
+        assertThat(createResponse.jsonPath().getString("data.model")).isEqualTo("SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        assertThat(createResponse.jsonPath().getString("data.createdAt")).isNotNull();
     }
 
     // Given: 존재하지 않는 냉장고 모델
@@ -90,7 +90,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: 존재하지 않는 model로 POST /refrigerators 요청
         ExtractableResponse<Response> createResponse = RestAssured.given()
@@ -142,7 +142,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // 냉장고 2개 생성
         냉장고_생성(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
@@ -156,7 +156,7 @@ class RefrigeratorAcceptanceTest {
 
         // Then: 200 OK, refrigerators 배열
         assertThat(listResponse.statusCode()).isEqualTo(200);
-        List<Map<String, Object>> refrigerators = listResponse.jsonPath().getList("refrigerators");
+        List<Map<String, Object>> refrigerators = listResponse.jsonPath().getList("data.refrigerators");
         assertThat(refrigerators).hasSize(2);
         assertThat(refrigerators).allSatisfy(r -> {
             assertThat(r.get("refrigeratorId")).isNotNull();
@@ -180,7 +180,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: GET /refrigerators 요청
         ExtractableResponse<Response> listResponse = RestAssured.given()
@@ -190,7 +190,7 @@ class RefrigeratorAcceptanceTest {
 
         // Then: 200 OK, 빈 배열
         assertThat(listResponse.statusCode()).isEqualTo(200);
-        List<Map<String, Object>> refrigerators = listResponse.jsonPath().getList("refrigerators");
+        List<Map<String, Object>> refrigerators = listResponse.jsonPath().getList("data.refrigerators");
         assertThat(refrigerators).isEmpty();
     }
 
@@ -209,7 +209,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
@@ -221,11 +221,11 @@ class RefrigeratorAcceptanceTest {
 
         // Then: 200 OK, compartments 포함
         assertThat(detailResponse.statusCode()).isEqualTo(200);
-        assertThat(detailResponse.jsonPath().getLong("refrigeratorId")).isEqualTo(refrigeratorId);
-        assertThat(detailResponse.jsonPath().getString("nickname")).isEqualTo("주방 냉장고");
-        assertThat(detailResponse.jsonPath().getString("model")).isEqualTo("SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
-        assertThat(detailResponse.jsonPath().getList("compartments")).isNotNull();
-        assertThat(detailResponse.jsonPath().getString("createdAt")).isNotNull();
+        assertThat(detailResponse.jsonPath().getLong("data.refrigeratorId")).isEqualTo(refrigeratorId);
+        assertThat(detailResponse.jsonPath().getString("data.nickname")).isEqualTo("주방 냉장고");
+        assertThat(detailResponse.jsonPath().getString("data.model")).isEqualTo("SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        assertThat(detailResponse.jsonPath().getList("data.compartments")).isNotNull();
+        assertThat(detailResponse.jsonPath().getString("data.createdAt")).isNotNull();
     }
 
     // Given: 존재하지 않는 냉장고 ID
@@ -241,7 +241,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: 존재하지 않는 ID로 GET /refrigerators/:refrigeratorId 요청
         ExtractableResponse<Response> detailResponse = RestAssured.given()
@@ -266,7 +266,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email1, phoneNumber1, password);
         ExtractableResponse<Response> loginResponse1 = 로그인(email1, password);
-        String accessToken1 = loginResponse1.jsonPath().getString("accessToken");
+        String accessToken1 = loginResponse1.jsonPath().getString("data.accessToken");
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken1, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
         // 사용자2 회원가입, 로그인
@@ -275,7 +275,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email2, phoneNumber2, password);
         ExtractableResponse<Response> loginResponse2 = 로그인(email2, password);
-        String accessToken2 = loginResponse2.jsonPath().getString("accessToken");
+        String accessToken2 = loginResponse2.jsonPath().getString("data.accessToken");
 
         // When: 사용자2가 사용자1의 냉장고 조회 시도
         ExtractableResponse<Response> detailResponse = RestAssured.given()
@@ -302,7 +302,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
@@ -316,10 +316,10 @@ class RefrigeratorAcceptanceTest {
 
         // Then: 200 OK
         assertThat(updateResponse.statusCode()).isEqualTo(200);
-        assertThat(updateResponse.jsonPath().getLong("refrigeratorId")).isEqualTo(refrigeratorId);
-        assertThat(updateResponse.jsonPath().getString("nickname")).isEqualTo("우리집 냉장고");
-        assertThat(updateResponse.jsonPath().getString("model")).isEqualTo("SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
-        assertThat(updateResponse.jsonPath().getString("updatedAt")).isNotNull();
+        assertThat(updateResponse.jsonPath().getLong("data.refrigeratorId")).isEqualTo(refrigeratorId);
+        assertThat(updateResponse.jsonPath().getString("data.nickname")).isEqualTo("우리집 냉장고");
+        assertThat(updateResponse.jsonPath().getString("data.model")).isEqualTo("SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        assertThat(updateResponse.jsonPath().getString("data.updatedAt")).isNotNull();
     }
 
     // Given: 존재하지 않는 냉장고 ID
@@ -335,7 +335,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: 존재하지 않는 ID로 PUT /refrigerators/:refrigeratorId 요청
         ExtractableResponse<Response> updateResponse = RestAssured.given()
@@ -362,7 +362,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email1, phoneNumber1, password);
         ExtractableResponse<Response> loginResponse1 = 로그인(email1, password);
-        String accessToken1 = loginResponse1.jsonPath().getString("accessToken");
+        String accessToken1 = loginResponse1.jsonPath().getString("data.accessToken");
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken1, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
         // 사용자2 회원가입, 로그인
@@ -371,7 +371,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email2, phoneNumber2, password);
         ExtractableResponse<Response> loginResponse2 = 로그인(email2, password);
-        String accessToken2 = loginResponse2.jsonPath().getString("accessToken");
+        String accessToken2 = loginResponse2.jsonPath().getString("data.accessToken");
 
         // When: 사용자2가 사용자1의 냉장고 수정 시도
         ExtractableResponse<Response> updateResponse = RestAssured.given()
@@ -400,7 +400,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
@@ -434,7 +434,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email, phoneNumber, password);
         ExtractableResponse<Response> loginResponse = 로그인(email, password);
-        String accessToken = loginResponse.jsonPath().getString("accessToken");
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
 
         // When: 존재하지 않는 ID로 DELETE /refrigerators/:refrigeratorId 요청
         ExtractableResponse<Response> deleteResponse = RestAssured.given()
@@ -459,7 +459,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email1, phoneNumber1, password);
         ExtractableResponse<Response> loginResponse1 = 로그인(email1, password);
-        String accessToken1 = loginResponse1.jsonPath().getString("accessToken");
+        String accessToken1 = loginResponse1.jsonPath().getString("data.accessToken");
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken1, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
         // 사용자2 회원가입, 로그인
@@ -468,7 +468,7 @@ class RefrigeratorAcceptanceTest {
 
         회원가입(email2, phoneNumber2, password);
         ExtractableResponse<Response> loginResponse2 = 로그인(email2, password);
-        String accessToken2 = loginResponse2.jsonPath().getString("accessToken");
+        String accessToken2 = loginResponse2.jsonPath().getString("data.accessToken");
 
         // When: 사용자2가 사용자1의 냉장고 삭제 시도
         ExtractableResponse<Response> deleteResponse = RestAssured.given()
@@ -533,6 +533,6 @@ class RefrigeratorAcceptanceTest {
                 .body(Map.of("nickname", nickname, "model", model))
                 .when().post("/refrigerators")
                 .then().extract();
-        return response.jsonPath().getLong("refrigeratorId");
+        return response.jsonPath().getLong("data.refrigeratorId");
     }
 }

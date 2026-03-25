@@ -52,7 +52,7 @@ class InventoryAcceptanceTest {
         String password = "Test123!@#";
 
         회원가입(email, phoneNumber, password);
-        String accessToken = 로그인(email, password).jsonPath().getString("accessToken");
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
 
         // when
         ExtractableResponse<Response> listResponse = RestAssured.given()
@@ -62,7 +62,7 @@ class InventoryAcceptanceTest {
 
         // then
         assertThat(listResponse.statusCode()).isEqualTo(200);
-        List<Map<String, Object>> inventory = listResponse.jsonPath().getList("inventory");
+        List<Map<String, Object>> inventory = listResponse.jsonPath().getList("data.inventory");
         assertThat(inventory).isEmpty();
     }
 
@@ -75,7 +75,7 @@ class InventoryAcceptanceTest {
         String password = "Test123!@#";
 
         회원가입(email, phoneNumber, password);
-        String accessToken = 로그인(email, password).jsonPath().getString("accessToken");
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
         // when
@@ -94,14 +94,14 @@ class InventoryAcceptanceTest {
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(201);
-        assertThat(createResponse.jsonPath().getLong("itemId")).isNotNull();
-        assertThat(createResponse.jsonPath().getString("name")).isEqualTo("당근");
-        assertThat(createResponse.jsonPath().getString("type")).isEqualTo("INGREDIENT");
-        assertThat(createResponse.jsonPath().getLong("refrigeratorId")).isEqualTo(refrigeratorId);
-        assertThat(createResponse.jsonPath().getString("compartmentId")).isEqualTo("냉장_우_1단");
-        assertThat(createResponse.jsonPath().getString("expiresAt")).isEqualTo("2026-03-10");
-        assertThat(createResponse.jsonPath().getList("nutrients")).isNotNull();
-        assertThat(createResponse.jsonPath().getList("allergyInfo")).isNotNull();
+        assertThat(createResponse.jsonPath().getLong("data.itemId")).isNotNull();
+        assertThat(createResponse.jsonPath().getString("data.name")).isEqualTo("당근");
+        assertThat(createResponse.jsonPath().getString("data.type")).isEqualTo("INGREDIENT");
+        assertThat(createResponse.jsonPath().getLong("data.refrigeratorId")).isEqualTo(refrigeratorId);
+        assertThat(createResponse.jsonPath().getString("data.compartmentId")).isEqualTo("냉장_우_1단");
+        assertThat(createResponse.jsonPath().getString("data.expiresAt")).isEqualTo("2026-03-10");
+        assertThat(createResponse.jsonPath().getList("data.nutrients")).isNotNull();
+        assertThat(createResponse.jsonPath().getList("data.allergyInfo")).isNotNull();
     }
 
     @Test
@@ -127,13 +127,13 @@ class InventoryAcceptanceTest {
         String ownerEmail = "inventory-owner@example.com";
         String ownerPhone = "01014141414";
         회원가입(ownerEmail, ownerPhone, password);
-        String ownerToken = 로그인(ownerEmail, password).jsonPath().getString("accessToken");
+        String ownerToken = 로그인(ownerEmail, password).jsonPath().getString("data.accessToken");
         Long ownerRefrigeratorId = 냉장고_생성_후_ID_반환(ownerToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
         String otherEmail = "inventory-other@example.com";
         String otherPhone = "01015151515";
         회원가입(otherEmail, otherPhone, password);
-        String otherToken = 로그인(otherEmail, password).jsonPath().getString("accessToken");
+        String otherToken = 로그인(otherEmail, password).jsonPath().getString("data.accessToken");
 
         // when
         ExtractableResponse<Response> createResponse = RestAssured.given()
@@ -162,7 +162,7 @@ class InventoryAcceptanceTest {
         String password = "Test123!@#";
 
         회원가입(email, phoneNumber, password);
-        String accessToken = 로그인(email, password).jsonPath().getString("accessToken");
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
         Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
 
         // when
@@ -223,6 +223,6 @@ class InventoryAcceptanceTest {
             .body(Map.of("nickname", nickname, "model", model))
             .when().post("/refrigerators")
             .then().extract();
-        return response.jsonPath().getLong("refrigeratorId");
+        return response.jsonPath().getLong("data.refrigeratorId");
     }
 }

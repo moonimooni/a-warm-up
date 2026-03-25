@@ -14,6 +14,7 @@ import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
 import kr.co.growmeal.auth.ui.dto.response.TokenRefreshResponse;
 import kr.co.growmeal.auth.application.AuthService;
 import kr.co.growmeal.auth.application.PhoneVerificationService;
+import kr.co.growmeal.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,44 +36,44 @@ public class AuthController {
     private final PhoneVerificationService phoneVerificationService;
 
     @PostMapping("/phone-verifications")
-    public ResponseEntity<Void> sendVerificationCode(@Valid @RequestBody PhoneVerificationRequest request) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> sendVerificationCode(@Valid @RequestBody PhoneVerificationRequest request) {
         phoneVerificationService.sendVerificationCode(request.phoneNumber());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.ok(Map.of()));
     }
 
     @PostMapping("/phone-verifications/confirm")
-    public ResponseEntity<Void> confirmVerificationCode(@Valid @RequestBody PhoneVerificationConfirmRequest request) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> confirmVerificationCode(@Valid @RequestBody PhoneVerificationConfirmRequest request) {
         phoneVerificationService.verifyCode(request.phoneNumber(), request.code());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.ok(Map.of()));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = authService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenRefreshResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<ApiResponse<TokenRefreshResponse>> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
         TokenRefreshResponse response = authService.refreshToken(request.refreshToken());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<LogoutResponse> logout(@Valid @RequestBody LogoutRequest request) {
+    public ResponseEntity<ApiResponse<LogoutResponse>> logout(@Valid @RequestBody LogoutRequest request) {
         LogoutResponse response = authService.logout(request.refreshToken());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MeResponse> getMe(Principal principal) {
+    public ResponseEntity<ApiResponse<MeResponse>> getMe(Principal principal) {
         MeResponse response = authService.getMe(principal.getName());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
