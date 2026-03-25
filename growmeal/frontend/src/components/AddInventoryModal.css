@@ -1,0 +1,195 @@
+/* Type Toggle */
+.type-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.type-toggle-btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: var(--color-text-sub);
+  background: var(--color-slot-empty);
+  border: 2px solid transparent;
+  border-radius: var(--radius-slot);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.type-toggle-btn:hover {
+  background: #e8f0e6;
+}
+
+.type-toggle-btn.active {
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+/* Fridge Selector */
+.fridge-selector {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fridge-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.fridge-selector-btn {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: var(--color-text-sub);
+  background: var(--color-slot-empty);
+  border: 2px solid transparent;
+  border-radius: var(--radius-slot);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.fridge-selector-btn:hover {
+  background: #e8f0e6;
+}
+
+.fridge-selector-btn.selected {
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+/* Compartment Section */
+.compartment-section {
+  margin-top: 16px;
+}
+
+.compartment-image {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  border-radius: var(--radius-slot);
+  margin-bottom: 12px;
+  background: var(--color-slot-empty);
+}
+
+.compartment-zone {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  margin-bottom: 8px;
+  margin-top: 12px;
+}
+
+.compartment-zone:first-child {
+  margin-top: 0;
+}
+
+.compartment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.compartment-btn {
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: var(--color-text-sub);
+  background: var(--color-slot-empty);
+  border: 2px solid transparent;
+  border-radius: var(--radius-slot);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.compartment-btn:hover {
+  background: #e8f0e6;
+}
+
+.compartment-btn.selected {
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+/* Image-based Compartment Selector */
+.compartment-image-container {
+  position: relative;
+  width: 100%;
+}
+
+.compartment-image-base {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-slot);
+  background: var(--color-slot-empty);
+}
+
+.compartment-overlay {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(92, 172, 122, 0.05);
+}
+
+.compartment-overlay:hover {
+  background: rgba(92, 172, 122, 0.18);
+  border-color: rgba(92, 172, 122, 0.4);
+}
+
+.compartment-overlay.selected {
+  background: rgba(92, 172, 122, 0.28);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(92, 172, 122, 0.2);
+}
+
+
+.compartment-selected-label {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  text-align: center;
+}
+
+/* Loading & Empty States */
+.modal-loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+}
+
+.modal-empty {
+  text-align: center;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--color-text-sub);
+  font-weight: 500;
+}
+
+.modal-empty a {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.modal-empty a:hover {
+  text-decoration: underline;
+}
