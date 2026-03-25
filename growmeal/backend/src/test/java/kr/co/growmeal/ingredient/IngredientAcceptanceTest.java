@@ -60,4 +60,23 @@ class IngredientAcceptanceTest {
             assertThat(ingredient.get("allergyInfo")).isNotNull();
         });
     }
+
+    @Test
+    @DisplayName("재료 검색 성공")
+    void 재료_검색_성공() {
+        // Given: '두부' 이름을 포함하는 재료 마스터 데이터가 존재함
+
+        // When: GET /ingredients/master/search?q=두부 요청
+        ExtractableResponse<Response> response = RestAssured.given()
+                .queryParam("q", "두부")
+                .when().get("/ingredients/master/search")
+                .then().extract();
+
+        // Then: 200 OK와 함께 '두부'를 포함하는 재료 목록 반환
+        assertThat(response.statusCode()).isEqualTo(200);
+
+        List<String> names = response.jsonPath().getList("data.ingredients.name");
+        assertThat(names).isNotEmpty();
+        assertThat(names).allSatisfy(name -> assertThat(name).contains("두부"));
+    }
 }

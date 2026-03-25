@@ -27,6 +27,12 @@ public class IngredientService {
         return toIngredientsResponse(ingredients);
     }
 
+    @Transactional(readOnly = true)
+    public IngredientsResponse searchIngredients(String query) {
+        List<IngredientMaster> ingredients = ingredientMasterRepository.findByNameContaining(query);
+        return toIngredientsResponse(ingredients);
+    }
+
     private IngredientsResponse toIngredientsResponse(List<IngredientMaster> ingredients) {
         List<Long> ids = ingredients.stream().map(IngredientMaster::getId).toList();
         Map<Long, List<String>> allergyMap = ingredientMasterAllergyRepository
