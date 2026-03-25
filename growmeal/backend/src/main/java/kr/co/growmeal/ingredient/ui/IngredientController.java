@@ -2,10 +2,12 @@ package kr.co.growmeal.ingredient.ui;
 
 import kr.co.growmeal.common.ApiResponse;
 import kr.co.growmeal.ingredient.application.IngredientService;
+import kr.co.growmeal.ingredient.ui.dto.response.IngredientMasterResponse;
 import kr.co.growmeal.ingredient.ui.dto.response.IngredientsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,12 @@ public class IngredientController {
     @GetMapping("/master/search")
     public ResponseEntity<ApiResponse<IngredientsResponse>> searchIngredients(@RequestParam String q) {
         IngredientsResponse response = ingredientService.searchIngredients(q);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/master/{ingredientId}")
+    public ResponseEntity<ApiResponse<IngredientMasterResponse>> getIngredient(@PathVariable Long ingredientId) {
+        IngredientMasterResponse response = ingredientService.getIngredient(ingredientId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

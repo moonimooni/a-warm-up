@@ -4,6 +4,7 @@ import kr.co.growmeal.ingredient.domain.IngredientMaster;
 import kr.co.growmeal.ingredient.domain.IngredientMasterAllergy;
 import kr.co.growmeal.ingredient.domain.IngredientMasterAllergyRepository;
 import kr.co.growmeal.ingredient.domain.IngredientMasterRepository;
+import kr.co.growmeal.ingredient.domain.exception.IngredientNotFoundException;
 import kr.co.growmeal.ingredient.ui.dto.response.IngredientMasterResponse;
 import kr.co.growmeal.ingredient.ui.dto.response.IngredientsResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,17 @@ public class IngredientService {
     public IngredientsResponse searchIngredients(String query) {
         List<IngredientMaster> ingredients = ingredientMasterRepository.findByNameContaining(query);
         return toIngredientsResponse(ingredients);
+    }
+
+    @Transactional(readOnly = true)
+    public IngredientMasterResponse getIngredient(Long ingredientId) {
+        IngredientMaster ingredient = ingredientMasterRepository.findById(ingredientId)
+                .orElseThrow(IngredientNotFoundException::new);
+        List<String> allergyInfo = ingredientMasterAllergyRepository
+                .findByIngredientMasterId(ingredientId).stream()
+                .map(IngredientMasterAllergy::getAllergyInfo)
+                .toList();
+        return IngredientMasterResponse.from(ingredient, allergyInfo);
     }
 
     private IngredientsResponse toIngredientsResponse(List<IngredientMaster> ingredients) {

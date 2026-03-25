@@ -79,4 +79,22 @@ class IngredientAcceptanceTest {
         assertThat(names).isNotEmpty();
         assertThat(names).allSatisfy(name -> assertThat(name).contains("두부"));
     }
+
+    @Test
+    @DisplayName("특정 재료 조회 성공")
+    void 특정_재료_조회_성공() {
+        // Given: 재료 마스터 데이터가 존재함 (data.sql에서 id=1은 '두부')
+
+        // When: GET /ingredients/master/1 요청
+        ExtractableResponse<Response> response = RestAssured.given()
+                .when().get("/ingredients/master/1")
+                .then().extract();
+
+        // Then: 200 OK와 함께 해당 재료 정보 반환
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getString("data.name")).isEqualTo("두부");
+        assertThat(response.jsonPath().getString("data.category")).isEqualTo("PROTEIN");
+        assertThat(response.jsonPath().getList("data.nutrients")).contains("PROTEIN", "CALCIUM");
+        assertThat(response.jsonPath().getList("data.allergyInfo")).contains("대두");
+    }
 }
