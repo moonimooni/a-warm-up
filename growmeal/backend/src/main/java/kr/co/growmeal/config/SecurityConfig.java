@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/me").authenticated()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/refrigerator-models/**").permitAll()
+                .requestMatchers("/ingredients/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
