@@ -8,7 +8,9 @@ import kr.co.growmeal.auth.domain.exception.UserNotFoundException;
 import kr.co.growmeal.inventory.domain.InventoryItem;
 import kr.co.growmeal.inventory.domain.InventoryItemRepository;
 import kr.co.growmeal.inventory.domain.exception.InvalidCompartmentException;
+import kr.co.growmeal.inventory.domain.exception.InventoryItemNotFoundException;
 import kr.co.growmeal.inventory.ui.dto.request.CreateInventoryItemRequest;
+import kr.co.growmeal.inventory.ui.dto.request.UpdateInventoryItemRequest;
 import kr.co.growmeal.inventory.ui.dto.response.CreateInventoryItemResponse;
 import kr.co.growmeal.inventory.ui.dto.response.InventoryItemResponse;
 import kr.co.growmeal.inventory.ui.dto.response.InventoryResponse;
@@ -73,6 +75,26 @@ public class InventoryService {
 
         InventoryItem saved = inventoryItemRepository.save(inventoryItem);
         return CreateInventoryItemResponse.from(saved, List.of(), List.of());
+    }
+
+    @Transactional
+    public InventoryItemResponse updateInventory(String email, Long itemId, UpdateInventoryItemRequest request) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+
+        InventoryItem inventoryItem = inventoryItemRepository.findById(itemId)
+            .orElseThrow(InventoryItemNotFoundException::new);
+
+        Refrigerator refrigerator = refrigeratorRepository.findByIdAndUserId(inventoryItem.getRefrigeratorId(), user.getId())
+            .orElseThrow(InventoryItemNotFoundException::new);
+
+        if (request.compartmentId() != null) {
+            validateCompartmentId(refrigerator.getRefrigeratorModel().getCompartments(), request.compartmentId());
+        }
+
+        inventoryItem.update(request.compartmentId(), request.expiresAt());
+
+        return InventoryItemResponse.from(inventoryItem, List.of(), List.of());
     }
 
     private void validateCompartmentId(String compartmentsJson, String compartmentId) {

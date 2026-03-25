@@ -154,6 +154,87 @@ class InventoryAcceptanceTest {
     }
 
     @Test
+    @DisplayName("인벤토리 수정 성공 - compartmentId 변경")
+    void 인벤토리_수정_성공() {
+        // given
+        String email = "inventory-update@example.com";
+        String phoneNumber = "01017171717";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+        Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        Long itemId = 인벤토리_생성_후_ID_반환(accessToken, refrigeratorId, "당근", "INGREDIENT", "bkf_10", "2026-03-10");
+
+        // when
+        ExtractableResponse<Response> updateResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of("compartmentId", "bkf_4"))
+            .when().put("/inventory/" + itemId)
+            .then().extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(200);
+        assertThat(updateResponse.jsonPath().getLong("data.itemId")).isEqualTo(itemId);
+        assertThat(updateResponse.jsonPath().getString("data.compartmentId")).isEqualTo("bkf_4");
+        assertThat(updateResponse.jsonPath().getString("data.name")).isEqualTo("당근");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 인벤토리 수정 시 404 에러")
+    void 존재하지_않는_인벤토리_수정_실패() {
+        // given
+        String email = "inventory-update-notfound@example.com";
+        String phoneNumber = "01018181818";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+
+        // when
+        ExtractableResponse<Response> updateResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of("compartmentId", "bkf_4"))
+            .when().put("/inventory/99999")
+            .then().extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("다른 사용자의 인벤토리 수정 시 404 에러")
+    void 다른_사용자_인벤토리_수정_실패() {
+        // given
+        String password = "Test123!@#";
+
+        String ownerEmail = "inventory-update-owner@example.com";
+        String ownerPhone = "01019191919";
+        회원가입(ownerEmail, ownerPhone, password);
+        String ownerToken = 로그인(ownerEmail, password).jsonPath().getString("data.accessToken");
+        Long ownerRefrigeratorId = 냉장고_생성_후_ID_반환(ownerToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        Long itemId = 인벤토리_생성_후_ID_반환(ownerToken, ownerRefrigeratorId, "당근", "INGREDIENT", "bkf_10", "2026-03-10");
+
+        String otherEmail = "inventory-update-other@example.com";
+        String otherPhone = "01020202020";
+        회원가입(otherEmail, otherPhone, password);
+        String otherToken = 로그인(otherEmail, password).jsonPath().getString("data.accessToken");
+
+        // when
+        ExtractableResponse<Response> updateResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + otherToken)
+            .body(Map.of("compartmentId", "bkf_4"))
+            .when().put("/inventory/" + itemId)
+            .then().extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(404);
+    }
+
+    @Test
     @DisplayName("유효하지 않은 compartmentId로 인벤토리 추가 시 400 에러")
     void 유효하지_않은_compartmentId로_인벤토리_추가_실패() {
         // given
@@ -214,6 +295,22 @@ class InventoryAcceptanceTest {
             .body(Map.of("email", email, "password", password))
             .when().post("/auth/login")
             .then().extract();
+    }
+
+    private Long 인벤토리_생성_후_ID_반환(String accessToken, Long refrigeratorId, String name, String type, String compartmentId, String expiresAt) {
+        ExtractableResponse<Response> response = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of(
+                "name", name,
+                "type", type,
+                "refrigeratorId", refrigeratorId,
+                "compartmentId", compartmentId,
+                "expiresAt", expiresAt
+            ))
+            .when().post("/inventory")
+            .then().extract();
+        return response.jsonPath().getLong("data.itemId");
     }
 
     private Long 냉장고_생성_후_ID_반환(String accessToken, String nickname, String model) {

@@ -53,4 +53,13 @@ public class InventoryItem {
         this.expiresAt = expiresAt;
         this.createdAt = LocalDateTime.now();
     }
+
+    public void update(String compartmentId, LocalDate expiresAt) {
+        if (compartmentId != null) {
+            this.compartmentId = compartmentId;
+        }
+        if (expiresAt != null) {
+            this.expiresAt = expiresAt;
+        }
+    }
 }
