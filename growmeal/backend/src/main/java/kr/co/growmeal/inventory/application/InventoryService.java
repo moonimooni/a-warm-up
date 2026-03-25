@@ -97,6 +97,20 @@ public class InventoryService {
         return InventoryItemResponse.from(inventoryItem, List.of(), List.of());
     }
 
+    @Transactional
+    public void deleteInventory(String email, Long itemId) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+
+        InventoryItem inventoryItem = inventoryItemRepository.findById(itemId)
+            .orElseThrow(InventoryItemNotFoundException::new);
+
+        refrigeratorRepository.findByIdAndUserId(inventoryItem.getRefrigeratorId(), user.getId())
+            .orElseThrow(InventoryItemNotFoundException::new);
+
+        inventoryItemRepository.delete(inventoryItem);
+    }
+
     private void validateCompartmentId(String compartmentsJson, String compartmentId) {
         if (compartmentsJson == null || compartmentsJson.isBlank()) {
             throw new InvalidCompartmentException();

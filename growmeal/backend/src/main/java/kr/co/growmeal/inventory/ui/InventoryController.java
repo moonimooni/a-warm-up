@@ -8,6 +8,7 @@ import kr.co.growmeal.inventory.ui.dto.request.UpdateInventoryItemRequest;
 import kr.co.growmeal.inventory.ui.dto.response.CreateInventoryItemResponse;
 import kr.co.growmeal.inventory.ui.dto.response.InventoryItemResponse;
 import kr.co.growmeal.inventory.ui.dto.response.InventoryResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +48,15 @@ public class InventoryController {
         String email = (String) authentication.getPrincipal();
         InventoryItemResponse response = inventoryService.updateInventory(email, itemId, request);
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<ApiResponse<Object>> deleteInventory(
+        @PathVariable Long itemId,
+        Authentication authentication
+    ) {
+        String email = (String) authentication.getPrincipal();
+        inventoryService.deleteInventory(email, itemId);
+        return ResponseEntity.ok(ApiResponse.ok(Map.of("message", "인벤토리가 삭제되었습니다.", "itemId", itemId)));
     }
 }

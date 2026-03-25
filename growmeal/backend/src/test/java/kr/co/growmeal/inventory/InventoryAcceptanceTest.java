@@ -264,6 +264,79 @@ class InventoryAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(400);
     }
 
+    @Test
+    @DisplayName("인벤토리 삭제 성공")
+    void 인벤토리_삭제_성공() {
+        // given
+        String email = "inventory-delete@example.com";
+        String phoneNumber = "01021212121";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+        Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        Long itemId = 인벤토리_생성_후_ID_반환(accessToken, refrigeratorId, "당근", "INGREDIENT", "bkf_10", "2026-03-10");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().delete("/inventory/" + itemId)
+            .then().extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(200);
+        assertThat(deleteResponse.jsonPath().getBoolean("success")).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 인벤토리 삭제 시 404 에러")
+    void 존재하지_않는_인벤토리_삭제_실패() {
+        // given
+        String email = "inventory-delete-notfound@example.com";
+        String phoneNumber = "01022222222";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().delete("/inventory/99999")
+            .then().extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("다른 사용자의 인벤토리 삭제 시 404 에러")
+    void 다른_사용자_인벤토리_삭제_실패() {
+        // given
+        String password = "Test123!@#";
+
+        String ownerEmail = "inventory-delete-owner@example.com";
+        String ownerPhone = "01023232323";
+        회원가입(ownerEmail, ownerPhone, password);
+        String ownerToken = 로그인(ownerEmail, password).jsonPath().getString("data.accessToken");
+        Long ownerRefrigeratorId = 냉장고_생성_후_ID_반환(ownerToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        Long itemId = 인벤토리_생성_후_ID_반환(ownerToken, ownerRefrigeratorId, "당근", "INGREDIENT", "bkf_10", "2026-03-10");
+
+        String otherEmail = "inventory-delete-other@example.com";
+        String otherPhone = "01024242424";
+        회원가입(otherEmail, otherPhone, password);
+        String otherToken = 로그인(otherEmail, password).jsonPath().getString("data.accessToken");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + otherToken)
+            .when().delete("/inventory/" + itemId)
+            .then().extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(404);
+    }
+
     private void 회원가입(String email, String phoneNumber, String password) {
         RestAssured.given()
             .contentType(ContentType.JSON)
