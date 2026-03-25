@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import '../App.css'
 import HomeHeader from '../components/HomeHeader'
 import MealSection, { MealSlot, SnackSlot } from '../components/MealSection'
 import InventorySection, { InventoryItem } from '../components/InventorySection'
 import RecentLog, { LogEntry } from '../components/RecentLog'
+import AddInventoryModal from '../components/AddInventoryModal'
 
 /* ── Mock Data ─────────────────────────────────────────── */
 const meals: MealSlot[] = [
@@ -50,6 +52,8 @@ const recentLog: LogEntry[] = [
 
 /* ── Component ─────────────────────────────────────────── */
 export default function Home() {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
   const today = new Date().toLocaleDateString('ko-KR', {
     year: 'numeric', month: '2-digit', day: '2-digit',
   }).replace(/\. /g, '.').replace('.', '.')
@@ -76,7 +80,7 @@ export default function Home() {
         <InventorySection
           items={inventory}
           onItemClick={(id) => alert(`${id} 클릭`)}
-          onAddClick={() => alert('반찬 추가')}
+          onAddClick={() => setIsAddModalOpen(true)}
           onViewAll={() => alert('인벤토리 전체 보기')}
         />
 
@@ -85,6 +89,12 @@ export default function Home() {
           onEntryClick={(id) => alert(`${id} 클릭`)}
         />
       </div>
+
+      <AddInventoryModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => setIsAddModalOpen(false)}
+      />
     </div>
   )
 }
