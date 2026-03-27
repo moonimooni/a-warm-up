@@ -11,7 +11,9 @@ import kr.co.growmeal.auth.domain.exception.VerificationCodeExpiredException;
 import kr.co.growmeal.inventory.domain.exception.InvalidCompartmentException;
 import kr.co.growmeal.ingredient.domain.exception.IngredientNotFoundException;
 import kr.co.growmeal.inventory.domain.exception.InventoryItemNotFoundException;
+import kr.co.growmeal.meal.domain.exception.MealLogNotFoundException;
 import kr.co.growmeal.refrigerator.domain.exception.RefrigeratorModelNotFoundException;
+import kr.co.growmeal.recipe.domain.exception.RecipeNotFoundException;
 import kr.co.growmeal.refrigerator.domain.exception.RefrigeratorNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +70,7 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.error("BAD_REQUEST", e.getMessage()));
     }
 
-    @ExceptionHandler({UserNotFoundException.class, RefrigeratorNotFoundException.class, InventoryItemNotFoundException.class, IngredientNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, RefrigeratorNotFoundException.class, InventoryItemNotFoundException.class, IngredientNotFoundException.class, RecipeNotFoundException.class, MealLogNotFoundException.class})
     public ResponseEntity<ApiResponse<Object>> handleNotFoundException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ApiResponse.error("NOT_FOUND", e.getMessage()));

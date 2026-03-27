@@ -192,8 +192,159 @@ class RecipeAcceptanceTest {
             .when().post("/inventory");
     }
 
+    @Test
+    @DisplayName("레시피 상세 조회 성공")
+    void 레시피_상세_조회_성공() {
+        // given
+        String email = "recipe-detail@example.com";
+        String phoneNumber = "01032323232";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+
+        Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        인벤토리_생성(accessToken, refrigeratorId, "두부", "INGREDIENT", "bkf_4", "2026-03-30");
+
+        Long recipeId = 레시피_생성_후_ID_반환(accessToken, "두부미역국", "MEDIUM",
+            List.of(
+                Map.of("step", 1, "description", "두부를 깍둑썬다"),
+                Map.of("step", 2, "description", "미역을 불린다"),
+                Map.of("step", 3, "description", "함께 끓인다")
+            ),
+            List.of(
+                Map.of("name", "두부", "amount", "50g"),
+                Map.of("name", "미역", "amount", "30g"),
+                Map.of("name", "마늘", "amount", "5g")
+            )
+        );
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().get("/recipes/" + recipeId)
+            .then().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getLong("data.recipeId")).isEqualTo(recipeId);
+        assertThat(response.jsonPath().getString("data.name")).isEqualTo("두부미역국");
+        assertThat(response.jsonPath().getString("data.difficulty")).isEqualTo("MEDIUM");
+        assertThat(response.jsonPath().getList("data.steps")).hasSize(3);
+        assertThat(response.jsonPath().getList("data.ingredients")).hasSize(3);
+        assertThat(response.jsonPath().getList("data.nutrients")).isNotEmpty();
+        assertThat(response.jsonPath().getList("data.allergyWarnings", String.class)).contains("대두");
+        assertThat(response.jsonPath().getString("data.createdAt")).isNotNull();
+
+        // missingIngredients 검증: 두부는 인벤토리에 있으므로 missing 아님
+        List<String> missingNames = response.jsonPath().getList("data.missingIngredients.name", String.class);
+        assertThat(missingNames).contains("미역", "마늘");
+        assertThat(missingNames).doesNotContain("두부");
+    }
+
+    @Test
+    @DisplayName("레시피 수정 성공")
+    void 레시피_수정_성공() {
+        // given
+        String email = "recipe-update@example.com";
+        String phoneNumber = "01033333333";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+
+        Long recipeId = 레시피_생성_후_ID_반환(accessToken, "두부미역국", "MEDIUM",
+            List.of(Map.of("step", 1, "description", "끓인다")),
+            List.of(
+                Map.of("name", "두부", "amount", "50g"),
+                Map.of("name", "미역", "amount", "30g")
+            )
+        );
+
+        // when - 이름, 난이도, 스텝 수정
+        ExtractableResponse<Response> updateResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of(
+                "name", "두부미역국 (개선판)",
+                "difficulty", "EASY",
+                "steps", List.of(
+                    Map.of("step", 1, "description", "두부와 미역을 준비한다"),
+                    Map.of("step", 2, "description", "함께 끓인다")
+                )
+            ))
+            .when().put("/recipes/" + recipeId)
+            .then().extract();
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(200);
+        assertThat(updateResponse.jsonPath().getString("data.name")).isEqualTo("두부미역국 (개선판)");
+        assertThat(updateResponse.jsonPath().getString("data.difficulty")).isEqualTo("EASY");
+        assertThat(updateResponse.jsonPath().getList("data.steps")).hasSize(2);
+        assertThat(updateResponse.jsonPath().getList("data.ingredients")).hasSize(2);
+
+        // when - 재료 수정 시 영양소/알레르기 재계산
+        ExtractableResponse<Response> updateIngredientsResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of(
+                "ingredients", List.of(
+                    Map.of("name", "당근", "amount", "100g")
+                )
+            ))
+            .when().put("/recipes/" + recipeId)
+            .then().extract();
+
+        // then - 재료가 당근으로 변경되었으므로 대두 알레르기가 사라져야 함
+        assertThat(updateIngredientsResponse.statusCode()).isEqualTo(200);
+        assertThat(updateIngredientsResponse.jsonPath().getList("data.ingredients")).hasSize(1);
+        assertThat(updateIngredientsResponse.jsonPath().getList("data.allergyWarnings", String.class)).doesNotContain("대두");
+    }
+
+    @Test
+    @DisplayName("레시피 삭제 성공")
+    void 레시피_삭제_성공() {
+        // given
+        String email = "recipe-delete@example.com";
+        String phoneNumber = "01034343434";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+
+        Long recipeId = 레시피_생성_후_ID_반환(accessToken, "두부미역국", "MEDIUM",
+            List.of(Map.of("step", 1, "description", "끓인다")),
+            List.of(Map.of("name", "두부", "amount", "50g"))
+        );
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().delete("/recipes/" + recipeId)
+            .then().extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(200);
+        assertThat(deleteResponse.jsonPath().getBoolean("success")).isTrue();
+        assertThat(deleteResponse.jsonPath().getString("data.message")).isEqualTo("레시피가 삭제되었습니다.");
+        assertThat(deleteResponse.jsonPath().getLong("data.recipeId")).isEqualTo(recipeId);
+
+        // when - 삭제 후 조회 시 404
+        ExtractableResponse<Response> getResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().get("/recipes/" + recipeId)
+            .then().extract();
+
+        // then
+        assertThat(getResponse.statusCode()).isEqualTo(404);
+    }
+
     private void 레시피_생성(String accessToken, String name, String difficulty, List<Map<String, Object>> steps, List<Map<String, String>> ingredients) {
-        RestAssured.given()
+        레시피_생성_후_ID_반환(accessToken, name, difficulty, steps, ingredients);
+    }
+
+    private Long 레시피_생성_후_ID_반환(String accessToken, String name, String difficulty, List<Map<String, Object>> steps, List<Map<String, String>> ingredients) {
+        ExtractableResponse<Response> response = RestAssured.given()
             .contentType(ContentType.JSON)
             .header("Authorization", "Bearer " + accessToken)
             .body(Map.of(
@@ -202,6 +353,8 @@ class RecipeAcceptanceTest {
                 "steps", steps,
                 "ingredients", ingredients
             ))
-            .when().post("/recipes");
+            .when().post("/recipes")
+            .then().extract();
+        return response.jsonPath().getLong("data.recipeId");
     }
 }

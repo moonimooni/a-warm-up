@@ -37,4 +37,14 @@ public class Recipe {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void update(String name, String difficulty) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (difficulty != null) {
+            this.difficulty = difficulty;
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
 }

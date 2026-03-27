@@ -9,7 +9,10 @@ import kr.co.growmeal.ingredient.domain.IngredientMasterRepository;
 import kr.co.growmeal.inventory.domain.InventoryItem;
 import kr.co.growmeal.inventory.domain.InventoryItemRepository;
 import kr.co.growmeal.recipe.domain.*;
+import kr.co.growmeal.recipe.domain.exception.RecipeNotFoundException;
 import kr.co.growmeal.recipe.ui.dto.request.CreateRecipeRequest;
+import kr.co.growmeal.recipe.ui.dto.request.UpdateRecipeRequest;
+import kr.co.growmeal.recipe.ui.dto.response.DeleteRecipeResponse;
 import kr.co.growmeal.recipe.ui.dto.response.RecipeDetailResponse;
 import kr.co.growmeal.recipe.ui.dto.response.RecipeDetailResponse.MissingIngredientResponse;
 import kr.co.growmeal.recipe.ui.dto.response.RecipeResponse;
@@ -169,6 +172,117 @@ public class RecipeService {
             .toList();
 
         return new RecipesResponse(details);
+    }
+
+    @Transactional(readOnly = true)
+    public RecipeDetailResponse getRecipe(Long recipeId, String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+            .orElseThrow(RecipeNotFoundException::new);
+
+        Set<String> inventoryItemNames = getInventoryItemNames(user.getId());
+        return buildRecipeDetailResponse(recipe, inventoryItemNames);
+    }
+
+    @Transactional
+    public RecipeDetailResponse updateRecipe(Long recipeId, UpdateRecipeRequest request, String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+            .orElseThrow(RecipeNotFoundException::new);
+
+        recipe.update(request.name(), request.difficulty());
+
+        if (request.steps() != null) {
+            recipeStepRepository.deleteByRecipeId(recipeId);
+            recipeStepRepository.saveAll(
+                request.steps().stream()
+                    .map(s -> RecipeStep.builder()
+                        .recipeId(recipeId)
+                        .step(s.step())
+                        .description(s.description())
+                        .image(s.image())
+                        .build())
+                    .toList()
+            );
+        }
+
+        if (request.ingredients() != null) {
+            recipeIngredientRepository.deleteByRecipeId(recipeId);
+            recipeIngredientRepository.saveAll(
+                request.ingredients().stream()
+                    .map(i -> {
+                        var master = ingredientMasterRepository.findByName(i.name());
+                        return RecipeIngredient.builder()
+                            .recipeId(recipeId)
+                            .ingredientMasterId(master.map(IngredientMaster::getId).orElse(null))
+                            .name(master.isEmpty() ? i.name() : null)
+                            .amount(i.amount())
+                            .build();
+                    })
+                    .toList()
+            );
+        }
+
+        Set<String> inventoryItemNames = getInventoryItemNames(user.getId());
+        return buildRecipeDetailResponse(recipe, inventoryItemNames);
+    }
+
+    @Transactional
+    public DeleteRecipeResponse deleteRecipe(Long recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+            .orElseThrow(RecipeNotFoundException::new);
+
+        recipeStepRepository.deleteByRecipeId(recipeId);
+        recipeIngredientRepository.deleteByRecipeId(recipeId);
+        recipeRepository.delete(recipe);
+
+        return new DeleteRecipeResponse("레시피가 삭제되었습니다.", recipeId);
+    }
+
+    private RecipeDetailResponse buildRecipeDetailResponse(Recipe recipe, Set<String> inventoryItemNames) {
+        List<RecipeStep> steps = recipeStepRepository.findByRecipeIdOrderByStep(recipe.getId());
+        List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(recipe.getId());
+
+        NutrientAllergyResult result = calculateNutrientsAndAllergies(ingredients);
+
+        List<Long> masterIds = ingredients.stream()
+            .map(RecipeIngredient::getIngredientMasterId)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
+        Map<Long, IngredientMaster> masterMap = masterIds.isEmpty()
+            ? Map.of()
+            : ingredientMasterRepository.findAllById(masterIds).stream()
+                .collect(Collectors.toMap(IngredientMaster::getId, m -> m));
+
+        List<StepResponse> stepResponses = steps.stream()
+            .map(s -> new StepResponse(s.getStep(), s.getDescription(), s.getImage()))
+            .toList();
+
+        List<IngredientResponse> ingredientResponses = ingredients.stream()
+            .map(i -> new IngredientResponse(resolveIngredientName(i, masterMap), i.getAmount()))
+            .toList();
+
+        List<MissingIngredientResponse> missingIngredients = ingredients.stream()
+            .filter(i -> !inventoryItemNames.contains(resolveIngredientName(i, masterMap)))
+            .map(i -> new MissingIngredientResponse(resolveIngredientName(i, masterMap), i.getAmount()))
+            .toList();
+
+        return new RecipeDetailResponse(
+            recipe.getId(),
+            recipe.getName(),
+            recipe.getDifficulty(),
+            stepResponses,
+            result.nutrients(),
+            ingredientResponses,
+            missingIngredients,
+            result.allergyWarnings(),
+            recipe.getCreatedAt()
+        );
     }
 
     private Set<String> getInventoryItemNames(Long userId) {
