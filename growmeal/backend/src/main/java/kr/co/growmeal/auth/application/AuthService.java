@@ -14,6 +14,7 @@ import kr.co.growmeal.auth.ui.dto.response.RegisterResponse;
 import kr.co.growmeal.auth.ui.dto.response.TokenRefreshResponse;
 import kr.co.growmeal.auth.domain.User;
 import kr.co.growmeal.auth.domain.UserRepository;
+import kr.co.growmeal.baby.domain.BabyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final BabyRepository babyRepository;
     private final PhoneVerificationService phoneVerificationService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -120,12 +122,15 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(InvalidCredentialsException::new);
 
-        // TODO: USER_BABY 테이블에서 babyId 조회
+        String babyId = babyRepository.findFirstByUserId(user.getId())
+            .map(baby -> baby.getId().toString())
+            .orElse(null);
+
         return new MeResponse(
             user.getId().toString(),
             user.getName(),
             user.getRole(),
-            null
+            babyId
         );
     }
 }

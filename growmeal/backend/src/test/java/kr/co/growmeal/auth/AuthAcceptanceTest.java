@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -245,6 +246,38 @@ class AuthAcceptanceTest {
             assertThat(meResponse.jsonPath().getString("data.userId")).isNotBlank();
             assertThat(meResponse.jsonPath().getString("data.name")).isEqualTo(name);
             assertThat(meResponse.jsonPath().getString("data.role")).isEqualTo("MOM");
+        }
+
+        @Test
+        @DisplayName("아기 등록 후 내 프로필 조회 시 babyId가 반환된다")
+        void 아기_등록_후_내_프로필에_babyId_반환() {
+            // Given: 회원가입, 로그인, 아기 등록
+            String email = "mebaby@example.com";
+            String phoneNumber = "01066667777";
+            String password = "Test123!@#";
+
+            회원가입WithName(email, phoneNumber, password, "엄마");
+            ExtractableResponse<Response> loginResponse = 로그인(email, password);
+            String accessToken = loginResponse.jsonPath().getString("data.accessToken");
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .body(Map.of(
+                            "name", "하율",
+                            "birthDate", "2024-01-15",
+                            "allergies", List.of("땅콩")))
+                    .when().post("/babies");
+
+            // When: 내 프로필 조회
+            ExtractableResponse<Response> meResponse = RestAssured.given()
+                    .header("Authorization", "Bearer " + accessToken)
+                    .when().get("/auth/me")
+                    .then().extract();
+
+            // Then: babyId가 반환된다
+            assertThat(meResponse.statusCode()).isEqualTo(200);
+            assertThat(meResponse.jsonPath().getString("data.babyId")).isNotNull();
         }
 
         // Given: 인증 토큰 없음
