@@ -86,7 +86,7 @@ class InventoryAcceptanceTest {
                 "name", "당근",
                 "type", "INGREDIENT",
                 "refrigeratorId", refrigeratorId,
-                "compartmentId", "냉장_우_1단",
+                "compartmentId", "bkf_10",
                 "expiresAt", "2026-03-10"
             ))
             .when().post("/inventory")
@@ -98,7 +98,7 @@ class InventoryAcceptanceTest {
         assertThat(createResponse.jsonPath().getString("data.name")).isEqualTo("당근");
         assertThat(createResponse.jsonPath().getString("data.type")).isEqualTo("INGREDIENT");
         assertThat(createResponse.jsonPath().getLong("data.refrigeratorId")).isEqualTo(refrigeratorId);
-        assertThat(createResponse.jsonPath().getString("data.compartmentId")).isEqualTo("냉장_우_1단");
+        assertThat(createResponse.jsonPath().getString("data.compartmentId")).isEqualTo("bkf_10");
         assertThat(createResponse.jsonPath().getString("data.expiresAt")).isEqualTo("2026-03-10");
         assertThat(createResponse.jsonPath().getList("data.nutrients")).isNotNull();
         assertThat(createResponse.jsonPath().getList("data.allergyInfo")).isNotNull();
@@ -143,7 +143,7 @@ class InventoryAcceptanceTest {
                 "name", "당근",
                 "type", "INGREDIENT",
                 "refrigeratorId", ownerRefrigeratorId,
-                "compartmentId", "냉장_우_1단",
+                "compartmentId", "bkf_10",
                 "expiresAt", "2026-03-10"
             ))
             .when().post("/inventory")
