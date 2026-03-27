@@ -40,6 +40,13 @@ public class BabyService {
         return CreateBabyResponse.from(saved);
     }
 
+    @Transactional(readOnly = true)
+    public CreateBabyResponse getBaby(Long babyId) {
+        Baby baby = babyRepository.findById(babyId)
+            .orElseThrow(() -> new IllegalArgumentException("아기를 찾을 수 없습니다."));
+        return CreateBabyResponse.from(baby);
+    }
+
     private String toAllergiesString(List<String> allergies) {
         if (allergies == null || allergies.isEmpty()) {
             return null;

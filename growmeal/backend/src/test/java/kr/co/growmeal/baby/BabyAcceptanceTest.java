@@ -100,6 +100,47 @@ class BabyAcceptanceTest {
     }
 
     @Test
+    @DisplayName("아기 등록 후 조회하면 등록한 정보가 반환된다")
+    void 아기_등록_후_조회_성공() {
+        // Given: 회원가입, 로그인, 아기 등록
+        String email = "getbaby@example.com";
+        String phoneNumber = "01055556666";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        ExtractableResponse<Response> loginResponse = 로그인(email, password);
+        String accessToken = loginResponse.jsonPath().getString("data.accessToken");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of(
+                "name", "도율",
+                "birthDate", "2024-06-01",
+                "allergies", List.of("우유"),
+                "heightCm", 70.0,
+                "weightKg", 8.0
+            ))
+            .when().post("/babies")
+            .then().extract();
+
+        Long babyId = createResponse.jsonPath().getLong("data.babyId");
+
+        // When: 아기 조회
+        ExtractableResponse<Response> getResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().get("/babies/{babyId}", babyId)
+            .then().extract();
+
+        // Then: 등록한 정보가 반환된다
+        assertThat(getResponse.statusCode()).isEqualTo(200);
+        assertThat(getResponse.jsonPath().getLong("data.babyId")).isEqualTo(babyId);
+        assertThat(getResponse.jsonPath().getString("data.name")).isEqualTo("도율");
+        assertThat(getResponse.jsonPath().getString("data.birthDate")).isEqualTo("2024-06-01");
+        assertThat(getResponse.jsonPath().getList("data.allergies")).containsExactly("우유");
+    }
+
+    @Test
     @DisplayName("필수 필드 누락 시 400 에러")
     void 필수_필드_누락_시_실패() {
         // Given: 회원가입 및 로그인
