@@ -35,15 +35,15 @@
 
 ## 1. 인증 (Auth)
 
-| Method | Path                             | 설명                   |
-| ------ | -------------------------------- | ---------------------- |
-| `POST` | `/auth/phone-verifications`      | 전화번호 인증번호 발송 |
-| `POST` | `/auth/phone-verifications/confirm` | 인증번호 확인       |
-| `POST` | `/auth/register`                 | 회원가입               |
-| `POST` | `/auth/login`                    | 로그인                 |
-| `POST` | `/auth/refresh`                  | Access Token 갱신      |
-| `POST` | `/auth/logout`                   | 로그아웃               |
-| `GET`  | `/auth/me`                       | 내 프로필 조회         |
+| Method | Path                                | 설명                   |
+| ------ | ----------------------------------- | ---------------------- |
+| `POST` | `/auth/phone-verifications`         | 전화번호 인증번호 발송 |
+| `POST` | `/auth/phone-verifications/confirm` | 인증번호 확인          |
+| `POST` | `/auth/register`                    | 회원가입               |
+| `POST` | `/auth/login`                       | 로그인                 |
+| `POST` | `/auth/refresh`                     | Access Token 갱신      |
+| `POST` | `/auth/logout`                      | 로그아웃               |
+| `GET`  | `/auth/me`                          | 내 프로필 조회         |
 
 ### POST /auth/phone-verifications
 
@@ -604,8 +604,8 @@ GET /ingredients/master/search?q=두부
 | Method   | Path                 | 설명                       |
 | -------- | -------------------- | -------------------------- |
 | `GET`    | `/recipes`           | 보유 재료 기반 레시피 추천 |
-| `GET`    | `/recipes/:recipeId` | 레시피 상세 조회           |
 | `POST`   | `/recipes`           | 레시피 추가                |
+| `GET`    | `/recipes/:recipeId` | 레시피 상세 조회           |
 | `PUT`    | `/recipes/:recipeId` | 레시피 수정                |
 | `DELETE` | `/recipes/:recipeId` | 레시피 삭제                |
 
