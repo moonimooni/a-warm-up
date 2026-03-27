@@ -216,8 +216,9 @@
 }
 
 .refrigerator-icon {
-  font-size: 40px;
-  line-height: 1;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .refrigerator-info {
