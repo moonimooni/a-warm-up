@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../App.css'
 import HomeHeader from '../components/HomeHeader'
 import MealSection, { MealSlot, SnackSlot } from '../components/MealSection'
@@ -50,9 +50,54 @@ const recentLog: LogEntry[] = [
   },
 ]
 
+const ROLE_MAP: Record<string, { emoji: string; label: string }> = {
+  MOM: { emoji: '👩', label: '엄마' },
+  DAD: { emoji: '👨', label: '아빠' },
+  GRANDMA: { emoji: '👵', label: '할머니' },
+  GRANDPA: { emoji: '👴', label: '할아버지' },
+  OTHER: { emoji: '👤', label: '보호자' },
+}
+
 /* ── Component ─────────────────────────────────────────── */
 export default function Home() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [babyName, setBabyName] = useState('')
+  const [babyBirthDate, setBabyBirthDate] = useState('')
+  const [profileEmoji, setProfileEmoji] = useState('👤')
+  const [profileLabel, setProfileLabel] = useState('보호자')
+
+  const token = localStorage.getItem('accessToken')
+
+  useEffect(() => {
+    if (!token) return
+
+    fetch('/api/v1/auth/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.data) return
+        const { role, babyId } = data.data
+        const profile = ROLE_MAP[role] || ROLE_MAP.OTHER
+        setProfileEmoji(profile.emoji)
+        setProfileLabel(profile.label)
+
+        if (babyId) {
+          fetch(`/api/v1/babies/${babyId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+            .then(res => res.json())
+            .then(babyData => {
+              if (babyData.data?.name) {
+                setBabyName(babyData.data.name)
+                if (babyData.data.birthDate) {
+                  setBabyBirthDate(babyData.data.birthDate)
+                }
+              }
+            })
+        }
+      })
+  }, [token])
 
   const today = new Date().toLocaleDateString('ko-KR', {
     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -61,10 +106,12 @@ export default function Home() {
   return (
     <div className="app-shell">
       <HomeHeader
-        babyName="하율이"
-        date={today}
-        profileEmoji="👩"
-        profileLabel="엄마"
+        babyName={babyName || '아기'}
+        date={babyBirthDate
+          ? `${Math.floor((new Date().getTime() - new Date(babyBirthDate).getTime()) / (1000 * 60 * 60 * 24 * 30.44))}개월`
+          : today}
+        profileEmoji={profileEmoji}
+        profileLabel={profileLabel}
       />
 
       <div style={{ padding: '0 14px' }}>
