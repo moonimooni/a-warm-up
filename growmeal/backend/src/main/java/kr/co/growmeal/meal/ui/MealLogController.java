@@ -4,8 +4,10 @@ import kr.co.growmeal.common.ApiResponse;
 import kr.co.growmeal.meal.application.MealLogService;
 import kr.co.growmeal.meal.ui.dto.request.CreateMealRequest;
 import kr.co.growmeal.meal.ui.dto.request.UpdateMealRequest;
+import kr.co.growmeal.meal.ui.dto.response.DeleteMealResponse;
 import kr.co.growmeal.meal.ui.dto.response.MealLogResponse;
 import kr.co.growmeal.meal.ui.dto.response.MealLogsResponse;
+import kr.co.growmeal.meal.ui.dto.response.MealRecommendationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +55,38 @@ public class MealLogController {
     ) {
         String email = (String) authentication.getPrincipal();
         MealLogResponse response = mealLogService.updateMeal(email, babyId, mealId, request);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/recommendations/inventory")
+    public ResponseEntity<ApiResponse<MealRecommendationResponse>> getRecommendations(
+        @PathVariable Long babyId,
+        Authentication authentication
+    ) {
+        String email = (String) authentication.getPrincipal();
+        MealRecommendationResponse response = mealLogService.getRecommendations(email, babyId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/{mealId}")
+    public ResponseEntity<ApiResponse<MealLogResponse>> getMeal(
+        @PathVariable Long babyId,
+        @PathVariable Long mealId,
+        Authentication authentication
+    ) {
+        String email = (String) authentication.getPrincipal();
+        MealLogResponse response = mealLogService.getMeal(email, babyId, mealId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @DeleteMapping("/{mealId}")
+    public ResponseEntity<ApiResponse<DeleteMealResponse>> deleteMeal(
+        @PathVariable Long babyId,
+        @PathVariable Long mealId,
+        Authentication authentication
+    ) {
+        String email = (String) authentication.getPrincipal();
+        DeleteMealResponse response = mealLogService.deleteMeal(email, babyId, mealId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

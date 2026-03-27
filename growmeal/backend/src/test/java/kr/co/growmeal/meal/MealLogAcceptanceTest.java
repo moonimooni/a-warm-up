@@ -112,6 +112,107 @@ class MealLogAcceptanceTest {
     }
 
     @Test
+    @DisplayName("끼니 기록 단건 조회 성공")
+    void 끼니_기록_단건_조회_성공() {
+        // given: 회원가입 → 로그인 → 아기 등록 → 끼니 생성
+        String email = "meal-detail@example.com";
+        String phoneNumber = "01043434343";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+        Long babyId = 아기_등록_후_ID_반환(accessToken);
+
+        Long mealId = 끼니_생성_후_ID_반환(accessToken, babyId, "LUNCH",
+            List.of(Map.of("name", "쌀밥")), "맛있게 먹었어요", "GOOD");
+
+        // when: 끼니 기록 단건 조회
+        ExtractableResponse<Response> response = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().get("/babies/" + babyId + "/meals/" + mealId)
+            .then().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getLong("data.mealId")).isEqualTo(mealId);
+        assertThat(response.jsonPath().getString("data.type")).isEqualTo("LUNCH");
+        assertThat(response.jsonPath().getList("data.foods")).hasSize(1);
+        assertThat(response.jsonPath().getString("data.foods[0].name")).isEqualTo("쌀밥");
+        assertThat(response.jsonPath().getString("data.notes")).isEqualTo("맛있게 먹었어요");
+        assertThat(response.jsonPath().getString("data.reaction")).isEqualTo("GOOD");
+        assertThat(response.jsonPath().getString("data.createdBy")).isEqualTo("MOM");
+        assertThat(response.jsonPath().getString("data.createdAt")).isNotNull();
+    }
+
+    @Test
+    @DisplayName("끼니 기록 삭제 성공")
+    void 끼니_기록_삭제_성공() {
+        // given: 회원가입 → 로그인 → 아기 등록 → 끼니 생성
+        String email = "meal-delete@example.com";
+        String phoneNumber = "01044444444";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+        Long babyId = 아기_등록_후_ID_반환(accessToken);
+
+        Long mealId = 끼니_생성_후_ID_반환(accessToken, babyId, "DINNER",
+            List.of(Map.of("name", "죽")), "조금 먹었어요", "NEUTRAL");
+
+        // when: 끼니 기록 삭제
+        ExtractableResponse<Response> deleteResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().delete("/babies/" + babyId + "/meals/" + mealId)
+            .then().extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(200);
+        assertThat(deleteResponse.jsonPath().getBoolean("success")).isTrue();
+        assertThat(deleteResponse.jsonPath().getString("data.message")).isEqualTo("끼니 기록이 삭제되었습니다.");
+        assertThat(deleteResponse.jsonPath().getLong("data.mealId")).isEqualTo(mealId);
+
+        // when: 삭제 후 조회 시 404
+        ExtractableResponse<Response> getResponse = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().get("/babies/" + babyId + "/meals/" + mealId)
+            .then().extract();
+
+        // then
+        assertThat(getResponse.statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("냉장고 인벤토리 아이템 추천 성공")
+    void 냉장고_인벤토리_아이템_추천_성공() {
+        // given: 회원가입 → 로그인 → 아기 등록 → 냉장고 생성 → 인벤토리 추가 → 끼니 기록
+        String email = "meal-recommend@example.com";
+        String phoneNumber = "01045454545";
+        String password = "Test123!@#";
+
+        회원가입(email, phoneNumber, password);
+        String accessToken = 로그인(email, password).jsonPath().getString("data.accessToken");
+        Long babyId = 아기_등록_후_ID_반환(accessToken);
+
+        Long refrigeratorId = 냉장고_생성_후_ID_반환(accessToken, "주방 냉장고", "SAMSUNG_BESPOKE_KITCHENFITMAX_FOUR_DOOR");
+        인벤토리_생성(accessToken, refrigeratorId, "당근", "INGREDIENT", "bkf_4", "2026-03-30");
+        인벤토리_생성(accessToken, refrigeratorId, "두부", "INGREDIENT", "bkf_4", "2026-03-30");
+
+        // 두부를 먹은 끼니 기록 (단백질 섭취)
+        끼니_생성_후_ID_반환(accessToken, babyId, "BREAKFAST",
+            List.of(Map.of("name", "두부")), "잘 먹었어요", "GOOD");
+
+        // when: 추천 조회
+        ExtractableResponse<Response> response = RestAssured.given()
+            .header("Authorization", "Bearer " + accessToken)
+            .when().get("/babies/" + babyId + "/meals/recommendations/inventory")
+            .then().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getList("data.recommendations")).isNotNull();
+    }
+
+    @Test
     @DisplayName("끼니 기록 수정 성공")
     void 끼니_기록_수정_성공() {
         // given: 회원가입 → 로그인 → 아기 등록 → 끼니 생성
@@ -190,6 +291,30 @@ class MealLogAcceptanceTest {
             .when().post("/babies")
             .then().extract();
         return response.jsonPath().getLong("data.babyId");
+    }
+
+    private Long 냉장고_생성_후_ID_반환(String accessToken, String nickname, String model) {
+        ExtractableResponse<Response> response = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of("nickname", nickname, "model", model))
+            .when().post("/refrigerators")
+            .then().extract();
+        return response.jsonPath().getLong("data.refrigeratorId");
+    }
+
+    private void 인벤토리_생성(String accessToken, Long refrigeratorId, String name, String type, String compartmentId, String expiresAt) {
+        RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + accessToken)
+            .body(Map.of(
+                "name", name,
+                "type", type,
+                "refrigeratorId", refrigeratorId,
+                "compartmentId", compartmentId,
+                "expiresAt", expiresAt
+            ))
+            .when().post("/inventory");
     }
 
     private Long 끼니_생성_후_ID_반환(String accessToken, Long babyId, String type,
